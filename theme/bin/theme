@@ -1,0 +1,174 @@
+#!/usr/bin/env zsh
+# theme: switch the color palette and the font of every themed tool (see ../AGENTS.md).
+#
+#   theme                         pick a palette (fzf, live preview, Esc reverts)
+#   theme colors [<name>]         pick / set the palette   (colors/<name>/palette)
+#   theme font [<name>]           pick / set the font      (fonts/<name>/font)
+#   theme apply                   re-render every target, e.g. after editing a palette
+#   theme import <url|file> <name>  turn a tinted-theming base16/base24 YAML scheme into a palette
+#   theme list [colors|font]
+#   theme current
+
+emulate -L zsh
+setopt extended_glob pipe_fail
+
+SELF=${0:A}
+THEME_HOME=${THEME_HOME:-$HOME/.theme}
+CUR=$THEME_HOME/current
+GEN=$THEME_HOME/generated
+
+die() {
+    print -u2 "theme: $*"
+    exit 1
+}
+
+# kind -> folder holding one subfolder per choice, and the file inside it
+typeset -A DIRS=(colors colors font fonts)
+typeset -A FILES=(colors palette font font)
+
+check_kind() { [[ -n ${DIRS[$1]-} ]] || die "unknown kind '$1' (colors or font)" }
+
+names() { print -l $THEME_HOME/${DIRS[$1]}/*(/N:t) }
+
+selected() { [[ -L $CUR/$1 ]] && print ${$(readlink $CUR/$1):t} }
+
+# Sources a palette (default: the selected one) and fills every optional key from base00..base0F
+load_palette() {
+    local file=${1:-$CUR/colors/palette} key src i
+    [[ -f $file ]] || die "no palette selected (theme colors <name>)"
+    source $file
+    for i in {0..15}; do
+        key=base0$(([##16] i))
+        [[ -n ${(P)key-} ]] || die "$file: $key is missing"
+    done
+    : ${variant:=dark} ${background:=$base00} ${foreground:=$base05}
+    : ${cursor:=$foreground} ${cursor_text:=$background}
+    : ${selection_bg:=$base02} ${selection_fg:=$foreground}
+    # ANSI 0-15: standard base16 mapping unless the palette sets colorN
+    local -a ansi=(base00 base08 base0B base0A base0D base0E base0C base05
+                   base03 base08 base0B base0A base0D base0E base0C base07)
+    for i in {0..15}; do
+        [[ -n ${(P)${:-color$i}-} ]] && continue
+        src=${ansi[i + 1]}
+        typeset -g color$i=${(P)src}
+    done
+}
+
+# Runs every targets/*.zsh in its own subshell: render() writes generated/<file>, reload() refreshes
+# the running app. A failing target is reported and the others still run.
+apply() {
+    mkdir -p $GEN $CUR
+    local k first
+    for k in colors font; do # first run: start from the first palette / font
+        [[ -L $CUR/$k ]] && continue
+        first=$(names $k | head -1)
+        [[ -n $first ]] && ln -sfn ../${DIRS[$k]}/$first $CUR/$k
+    done
+    load_palette
+    [[ -f $CUR/font/font ]] && source $CUR/font/font
+    THEME_COLORS=$(selected colors) THEME_FONT=$(selected font)
+    local t
+    for t in $THEME_HOME/targets/*.zsh(N); do
+        (source $t && render && reload) || print -u2 "theme: target ${t:t:r} failed"
+    done
+    # Watched by Neovim (and anything else that wants to follow): rewritten on every apply
+    print "$THEME_COLORS $THEME_FONT" >$GEN/stamp
+}
+
+set_choice() {
+    local kind=$1 name=$2
+    [[ -d $THEME_HOME/${DIRS[$kind]}/$name ]] || die "no $kind '$name' (theme list $kind)"
+    mkdir -p $CUR
+    ln -sfn ../${DIRS[$kind]}/$name $CUR/$kind
+    apply
+}
+
+pick() {
+    local kind=$1 before=$(selected $1) choice
+    local -a all=(${(f)"$(names $kind)"})
+    (( $#all )) || die "no $kind in $THEME_HOME/${DIRS[$kind]}"
+    local start=${all[(ie)$before]}
+    (( start > $#all )) && start=1
+    if (( $+commands[fzf] )); then
+        choice=$(print -l $all | fzf --prompt="$kind> " --height=~50% --reverse --no-sort \
+            --header="Enter keep · Esc revert" \
+            --preview="$SELF preview $kind {}" --preview-window=right,60%,border-left \
+            --bind="load:pos($start)" \
+            --bind="focus:execute-silent($SELF $kind {})")
+    else
+        select choice in $all; do break; done
+    fi
+    if [[ -n $choice ]]; then
+        set_choice $kind $choice
+        print "$kind: $choice"
+    elif [[ -n $before ]]; then
+        set_choice $kind $before
+    fi
+}
+
+swatch() { # hex [label]
+    local h=${1#\#}
+    printf '\e[48;2;%d;%d;%dm      \e[0m %s\n' $((16#${h[1,2]})) $((16#${h[3,4]})) $((16#${h[5,6]})) "$2"
+}
+
+preview() {
+    local kind=$1 name=$2 dir=$THEME_HOME/${DIRS[$1]}/$2 i key
+    if [[ $kind == colors ]]; then
+        (
+            load_palette $dir/palette
+            print "${name:-$2} (${variant})\n"
+            for i in {0..15}; do
+                key=base0$(([##16] i))
+                swatch ${(P)key} "$key ${(P)key}"
+            done
+        )
+    else
+        cat $dir/font
+        print "\nThe quick brown fox jumps over the lazy dog\n0O 1lI {}[]() => != -> <= ===  "
+    fi
+}
+
+import() {
+    local src=$1 name=$2 yaml dir=$THEME_HOME/colors/$2
+    [[ -n $src && -n $name ]] || die "usage: theme import <url|file> <name>"
+    [[ -e $dir ]] && die "colors/$name already exists"
+    if [[ $src == http* ]]; then yaml=$(curl -fsSL $src) || die "cannot download $src"
+    else yaml=$(<$src) || die "cannot read $src"; fi
+    local title=$(print -r -- $yaml | sed -nE 's/^(scheme|name): *"?([^"]*)"?.*/\2/p' | head -1)
+    local variant=$(print -r -- $yaml | sed -nE 's/^variant: *"?([a-z]+)"?.*/\1/p' | head -1)
+    # "  base0a: "#d8a657"" (spec 0.11) or "base0A: "d8a657"" (older schemes) -> "A d8a657"
+    local -a bases=(${(f)"$(print -r -- $yaml |
+        sed -nE 's/^ *base0([0-9A-Fa-f]): *"?#?([0-9a-fA-F]{6})"?.*/\1 \2/p')"})
+    (( $#bases == 16 )) || die "$src: found $#bases of base00..base0F"
+    mkdir -p $dir
+    {
+        print "# $title (imported from $src)"
+        print "name=\"$title\"\nvariant=${variant:-dark}\n"
+        local l
+        for l in $bases; do print "base0${(U)l[1]}=\"#${(L)l[3,-1]}\""; done
+    } >$dir/palette
+    print "created colors/$name/palette — try it: theme colors $name"
+}
+
+case ${1-} in
+    "") pick colors ;;
+    colors | font)
+        check_kind $1
+        if [[ -n ${2-} ]]; then set_choice $1 $2; else pick $1; fi
+        ;;
+    apply) apply ;;
+    import) import ${2-} ${3-} ;;
+    preview) preview $2 $3 ;;
+    list)
+        for k in ${=${2:-colors font}}; do
+            check_kind $k
+            print "$k:"
+            for n in $(names $k); do
+                if [[ $n == $(selected $k) ]]; then print "  * $n"; else print "    $n"; fi
+            done
+        done
+        ;;
+    current) print "colors: $(selected colors)\nfont:   $(selected font)" ;;
+    -h | --help | help) sed -n '2,11s/^# \{0,1\}//p' $SELF ;;
+    *) die "unknown command '$1' (theme help)" ;;
+esac

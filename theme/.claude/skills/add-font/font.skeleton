@@ -1,0 +1,4 @@
+# <Font Name> — <where it comes from: built into Ghostty / brew install --cask font-<name> / URL>
+font_family="<Exact Family Name>"   # as printed by `ghostty +list-fonts`
+font_size=13
+# font_features="-calt, -liga, -dlig"   # optional: OpenType features (here: ligatures off)

@@ -1,0 +1,53 @@
+# Homebrew (dark) — "taproom after hours / the same bar at noon", from ~/Downloads/homebrew-theme
+# base16: mapped by hand from palette.json (same roles as its Neovim theme: amber keywords,
+# hop strings, ice functions, teal types). ANSI + terminal: its ghostty/homebrew-dark.
+name="Homebrew Dark"
+variant=dark
+
+# Claude Code (skin plugin): start from its built-in skin, not from base16
+claude_skin=homebrew
+
+# Neovim: its own colorscheme (~/.config/nvim/themes/colors/homebrew.lua, follows variant)
+nvim_colorscheme=homebrew
+
+# base16 — https://github.com/tinted-theming/home/blob/main/styling.md
+base00="#2a2520"   # bg
+base01="#342e28"   # bg1
+base02="#4a4036"   # selection
+base03="#8c7b66"   # comment
+base04="#a8957a"   # muted
+base05="#f1dbb2"   # fg
+base06="#fcebcb"   # fg_hi
+base07="#fcebcb"   # fg_hi
+base08="#ec7f72"   # red
+base09="#e8925a"   # copper
+base0A="#ecc46c"   # honey
+base0B="#b8bf6e"   # hop (strings)
+base0C="#74c0b2"   # teal
+base0D="#86bcd0"   # ice (functions)
+base0E="#fbb040"   # amber (keywords)
+base0F="#bfae92"   # wheat
+
+# terminal
+background="#2a2520"
+foreground="#f1dbb2"
+cursor="#fbb040"
+cursor_text="#2a2520"
+selection_bg="#4a4036"
+selection_fg="#fcebcb"
+color0="#342e28"
+color1="#ec7f72"
+color2="#93c07e"
+color3="#ecc46c"
+color4="#98a8dc"
+color5="#cc9cc4"
+color6="#74c0b2"
+color7="#d6c19c"
+color8="#7d6c59"
+color9="#f59a8e"
+color10="#acd496"
+color11="#f7d68a"
+color12="#b2c0ea"
+color13="#ddb4d6"
+color14="#92d4c6"
+color15="#fcebcb"

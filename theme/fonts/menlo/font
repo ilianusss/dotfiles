@@ -1,0 +1,3 @@
+# Menlo — ships with macOS. Ghostty adds Nerd Font icons as a fallback.
+font_family="Menlo"
+font_size=13

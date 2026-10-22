@@ -1,0 +1,52 @@
+# Kanagawa Paper Ink — https://github.com/thesimonho/kanagawa-paper.nvim
+# base16: mapped by hand from the plugin's ink theme (lua/kanagawa-paper/themes/ink.lua).
+# ANSI: the plugin's extras/ghostty/kanagawa-paper-ink.
+name="Kanagawa Paper Ink"
+variant=dark
+
+# Claude Code (skin plugin): start from its built-in skin, not from base16
+claude_skin=kanagawa
+
+# Neovim uses the plugin's own colorscheme instead of generating one from base16
+nvim_colorscheme=kanagawa-paper-ink
+
+# base16 — https://github.com/tinted-theming/home/blob/main/styling.md
+base00="#1f1f28"
+base01="#2a2a37"
+base02="#363646"
+base03="#727169"
+base04="#9e9b93"
+base05="#dcd7ba"
+base06="#c5c9c5"
+base07="#d5cd9d"
+base08="#c4746e"
+base09="#b6927b"
+base0A="#c4b28a"
+base0B="#8a9a7b"
+base0C="#8ea49e"
+base0D="#859fac"
+base0E="#a292a3"
+base0F="#9d7665"
+
+# terminal
+background="#1f1f28"
+foreground="#dcd7ba"
+cursor="#c4b28a"
+selection_bg="#363646"
+selection_fg="#9e9b93"
+color0="#393836"
+color1="#c4746e"
+color2="#699469"
+color3="#c4b28a"
+color4="#435965"
+color5="#a292a3"
+color6="#8ea49e"
+color7="#c8c093"
+color8="#aca9a4"
+color9="#cc928e"
+color10="#72a072"
+color11="#d4c196"
+color12="#698a9b"
+color13="#b4a7b5"
+color14="#96ada7"
+color15="#d5cd9d"

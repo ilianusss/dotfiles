@@ -1,0 +1,54 @@
+# <Theme Name> (<variant>) — <source URL>
+# base16: <where the 16 base colors come from>. ANSI: <where color0..15 come from, or "derived">.
+name="<Theme Name>"
+variant=dark
+
+# Optional: use this Neovim colorscheme instead of generating one with mini.base16
+# nvim_colorscheme=<colorscheme-name>
+
+# Optional, Claude Code skin (derived from base16 by default): start from a built-in skin,
+# and/or override single slots (user fg muted surface zebra ok err warn read write run search web mcp other)
+# claude_skin=<built-in skin: kanagawa, gruvbox, homebrew...>
+# claude_user="#000000"
+
+# base16 — https://github.com/tinted-theming/home/blob/main/styling.md
+base00="#000000"   # background
+base01="#000000"   # lighter background: statusline, cursorline, floats
+base02="#000000"   # selection background
+base03="#000000"   # comments, invisibles
+base04="#000000"   # dim foreground: line numbers
+base05="#000000"   # foreground
+base06="#000000"   # light foreground
+base07="#000000"   # brightest foreground
+base08="#000000"   # red: variables, errors
+base09="#000000"   # orange: numbers, constants
+base0A="#000000"   # yellow: types, search
+base0B="#000000"   # green: strings
+base0C="#000000"   # cyan: support, regex
+base0D="#000000"   # blue: functions
+base0E="#000000"   # magenta: keywords
+base0F="#000000"   # brown: deprecated
+
+# terminal — optional, each key falls back to base16 (see AGENTS.md)
+# background="#000000"
+# foreground="#000000"
+# cursor="#000000"
+# cursor_text="#000000"
+# selection_bg="#000000"
+# selection_fg="#000000"
+# color0="#000000"    # black
+# color1="#000000"    # red
+# color2="#000000"    # green
+# color3="#000000"    # yellow
+# color4="#000000"    # blue
+# color5="#000000"    # magenta
+# color6="#000000"    # cyan
+# color7="#000000"    # white
+# color8="#000000"    # bright black
+# color9="#000000"    # bright red
+# color10="#000000"   # bright green
+# color11="#000000"   # bright yellow
+# color12="#000000"   # bright blue
+# color13="#000000"   # bright magenta
+# color14="#000000"   # bright cyan
+# color15="#000000"   # bright white

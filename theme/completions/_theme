@@ -1,0 +1,23 @@
+#compdef theme
+# zsh completion for the `theme` command (~/.theme/bin/theme)
+
+local home=${THEME_HOME:-$HOME/.theme}
+local -a commands=(
+    'colors:pick or set the color palette'
+    'font:pick or set the font'
+    'apply:re-render every target'
+    'import:create a palette from a base16 YAML scheme'
+    'list:list palettes and fonts'
+    'current:show the selected palette and font'
+)
+
+if (( CURRENT == 2 )); then
+    _describe 'command' commands
+    return
+fi
+case $words[2] in
+    colors) (( CURRENT == 3 )) && compadd -- $home/colors/*(/N:t) ;;
+    font) (( CURRENT == 3 )) && compadd -- $home/fonts/*(/N:t) ;;
+    list) (( CURRENT == 3 )) && compadd colors font ;;
+    import) (( CURRENT == 3 )) && _files ;;
+esac
