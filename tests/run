@@ -1,0 +1,131 @@
+#!/usr/bin/env zsh
+# Runs the test_* functions of tests/*.zsh, each in its own subshell on a fresh fixture.
+#
+#   tests/run              every test
+#   tests/run <pattern>    the tests whose name matches, e.g. tests/run 'test_update_*'
+
+emulate -L zsh
+setopt extended_glob pipe_fail
+
+REPO=${0:A:h:h}
+
+# A home whose repos are clones of bare repos in $T/remotes. Each bare repo has a second clone in
+# $T/other/<name>: the other machine, which pushes the upstream changes. The remotes are named after
+# their GitHub url, so `install` clones them through url.insteadOf. The dotfiles repo's platform,
+# theme and bin/dotfiles are stubs, like nvim: each appends its call to $HOME/calls.
+fixture() {
+    export HOME=$T/home DOTFILES=$T/home/.dotfiles
+    export GIT_CONFIG_GLOBAL=$T/gitconfig GIT_CONFIG_NOSYSTEM=1
+    export PATH=$T/bin:$PATH
+    unset XDG_STATE_HOME
+    mkdir -p $HOME $T/bin $T/template
+
+    git config --global user.name test
+    git config --global user.email test@example.com
+    git config --global init.defaultBranch main
+    git config --global init.templateDir $T/template
+    git config --global protocol.file.allow always
+    git config --global --add url.$T/remotes/.insteadOf git@github.com:ilianusss/
+    git config --global --add url.$T/remotes/.insteadOf https://github.com/
+
+    stub $T/bin/nvim 'print -r -- "nvim $*" >>$HOME/calls'
+
+    make_remote nvim init.lua lazy-lock.json
+    make_remote workflow README.md
+    make_remote .claude settings.json
+    git -C $T/other/.claude submodule add -q ../workflow.git mods/workflow
+    git -C $T/other/.claude commit -qm "add workflow"
+    git -C $T/other/.claude push -q
+    make_remote ohmyzsh/ohmyzsh oh-my-zsh.sh
+    local plugin
+    for plugin in zsh-autosuggestions zsh-completions zsh-syntax-highlighting; do
+        make_remote zsh-users/$plugin $plugin.zsh
+    done
+
+    make_remote dotfiles zsh/zshrc ghostty/config.ghostty
+    local other=$T/other/dotfiles os
+    for os in darwin linux; do
+        mkdir -p $other/platforms
+        print -r -- 'notify() { print -r -- "notify $*" >>$HOME/calls }
+schedule() { print -r -- schedule >>$HOME/calls }' >$other/platforms/$os.zsh
+    done
+    stub $other/bin/dotfiles 'print -r -- "dotfiles $* at $(git -C ${0:A:h:h} rev-parse HEAD)" >>$HOME/calls'
+    stub $other/theme/bin/theme 'print -r -- "theme $*" >>$HOME/calls'
+    git -C $other add -A
+    git -C $other commit -qm stubs
+    git -C $other push -q
+
+    clone dotfiles $DOTFILES
+    clone nvim $HOME/.config/nvim
+    clone .claude $HOME/.claude
+    clone ohmyzsh/ohmyzsh $HOME/.oh-my-zsh
+    for plugin in zsh-autosuggestions zsh-completions zsh-syntax-highlighting; do
+        clone zsh-users/$plugin $HOME/.oh-my-zsh/custom/plugins/$plugin
+    done
+}
+
+stub() {
+    mkdir -p ${1:h}
+    print -r -- "#!/usr/bin/env zsh"$'\n'"$2" >$1
+    chmod +x $1
+}
+
+# A bare repo at $T/remotes/<name>.git with one commit of the given files
+make_remote() {
+    local name=$1 other=$T/other/$1 file
+    shift
+    git init -q --bare $T/remotes/$name.git
+    git clone -q $T/remotes/$name.git $other 2>/dev/null
+    for file; do
+        mkdir -p $other/${file:h}
+        print -r -- "$file v1" >$other/$file
+    done
+    git -C $other add -A
+    git -C $other commit -qm init
+    git -C $other push -q -u origin main
+}
+
+clone() { git clone -q --recurse-submodules $T/remotes/$1.git $2 }
+
+# Commits <content> to <file> of <repo> on the other machine and pushes it
+push_upstream() {
+    local other=$T/other/$1
+    mkdir -p $other/${2:h}
+    print -r -- $3 >$other/$2
+    git -C $other add -A
+    git -C $other commit -qm "change $2"
+    git -C $other push -q
+}
+
+dotfiles() { $REPO/bin/dotfiles "$@" }
+
+head_of() { git -C $1 rev-parse HEAD }
+
+upstream_of() { git --git-dir=$T/remotes/$1.git rev-parse main }
+
+calls() { [[ -f $HOME/calls ]] && print -r -- "$(<$HOME/calls)" }
+
+fail() {
+    print -u2 -r -- "    $*"
+    exit 1
+}
+
+assert_eq() { [[ $1 == "$2" ]] || fail "expected: ${(qqq)2}"$'\n'"    got:      ${(qqq)1}" }
+
+for file in ${0:A:h}/*.zsh; do
+    source $file
+done
+
+typeset failed=0 name output
+for name in ${(ok)functions[(I)${1:-test_*}]}; do
+    T=$(mktemp -d ${TMPDIR:-/tmp}/dotfiles-test.XXXXXX)
+    if output=$( (fixture && $name) 2>&1 ); then
+        print -r -- "ok    $name"
+    else
+        print -r -- "FAIL  $name"
+        print -r -- "$output"
+        failed=1
+    fi
+    rm -rf $T
+done
+exit $failed

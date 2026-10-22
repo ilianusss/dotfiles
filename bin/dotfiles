@@ -1,0 +1,206 @@
+#!/usr/bin/env zsh
+# dotfiles: link the config files, clone the repos and keep them all up to date (see ../AGENTS.md).
+#
+#   dotfiles install   clone what is missing, link the files, apply the theme, schedule `update`
+#   dotfiles update    fast-forward every repo to its upstream; local work is never touched
+#   dotfiles status    uncommitted or unpushed work per repo, and files that are not linked
+
+emulate -L zsh
+setopt extended_glob pipe_fail
+zmodload zsh/system zsh/datetime
+
+DOTFILES=${DOTFILES:-${0:A:h:h}}
+STATE=${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles
+
+# File in this repo -> where it is linked
+LINKS=(
+    zsh/zshrc              ~/.zshrc
+    ghostty/config.ghostty ~/.config/ghostty/config.ghostty
+    theme                  ~/.theme
+)
+
+# Repos kept up to date by `update`: url -> path
+REPOS=(
+    git@github.com:ilianusss/nvim.git    ~/.config/nvim
+    git@github.com:ilianusss/.claude.git ~/.claude
+)
+
+# Cloned by `install` when missing, then left alone: oh-my-zsh updates itself
+ZSH_DEPS=(
+    https://github.com/ohmyzsh/ohmyzsh.git                   ~/.oh-my-zsh
+    https://github.com/zsh-users/zsh-autosuggestions.git     ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    https://github.com/zsh-users/zsh-completions.git         ~/.oh-my-zsh/custom/plugins/zsh-completions
+    https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
+)
+
+die() {
+    print -u2 -r -- "dotfiles: $*"
+    exit 1
+}
+
+# Sources schedule() and notify() for this machine: platforms/linux-<distro>.zsh when it exists,
+# else platforms/<os>.zsh
+load_platform() {
+    local os=${(L)$(uname -s)} file
+    local -a files=($DOTFILES/platforms/$os.zsh)
+    [[ -r /etc/os-release ]] && files=($DOTFILES/platforms/$os-$(source /etc/os-release && print -r -- $ID).zsh $files)
+    for file in $files; do
+        [[ -f $file ]] || continue
+        source $file
+        return
+    done
+    die "no platform file for $os in ${(D)DOTFILES}/platforms"
+}
+
+log() { print -r -- "$(strftime '%F %T' $EPOCHSECONDS) $*" }
+
+# The scheduled run has no SSH agent: the repos are public, so they are fetched over HTTPS.
+# Their remotes keep the SSH url, for pushing.
+git_https() { git -c url.https://github.com/.insteadOf=git@github.com: "$@" }
+
+install() {
+    local url dir failed=0
+    for url dir in $REPOS $ZSH_DEPS; do
+        clone $url $dir || failed=1
+    done
+    link || failed=1
+    $DOTFILES/theme/bin/theme apply || failed=1
+    # Last: rescheduling can stop the scheduled update that is running this install
+    schedule || failed=1
+    return failed
+}
+
+is_linked() { [[ -L $2 && $(readlink $2) == $DOTFILES/$1 ]] }
+
+# Links every file of LINKS. Whatever is in the way is kept, moved to <target>.bak.<time>.
+link() {
+    local file target backup
+    for file target in $LINKS; do
+        is_linked $file $target && continue
+        mkdir -p ${target:h}
+        if [[ -e $target || -L $target ]]; then
+            backup=$target.bak.$(strftime %Y%m%d-%H%M%S $EPOCHSECONDS)
+            mv $target $backup || return
+            print -r -- "moved ${(D)target} to ${(D)backup}"
+        fi
+        ln -s $DOTFILES/$file $target || return
+        print -r -- "linked ${(D)target}"
+    done
+}
+
+clone() {
+    local url=$1 dir=$2
+    [[ -d $dir/.git ]] && return
+    if [[ -e $dir ]]; then
+        print -u2 -r -- "${(D)dir} exists but is not a clone of $url: move it away, then rerun dotfiles install"
+        return 1
+    fi
+    git_https clone --quiet --recurse-submodules $url $dir || return
+    print -r -- "cloned ${(D)dir}"
+}
+
+update() {
+    local url dir failed=0
+    mkdir -p $STATE && : >>$STATE/lock
+    if ! zsystem flock -t 0 $STATE/lock 2>/dev/null; then
+        print -u2 "dotfiles: an update is already running"
+        return 0
+    fi
+    for url dir in $REPOS; do
+        sync $dir || failed=1
+    done
+    sync $DOTFILES || failed=1
+    return failed
+}
+
+# Fast-forwards a repo to its upstream
+sync() {
+    local dir=$1 error head upstream
+    if [[ ! -d $dir/.git ]]; then
+        log "${(D)dir}: not cloned, run dotfiles install"
+        return 1
+    fi
+    if ! error=$(git_https -C $dir fetch --quiet 2>&1); then
+        log "${(D)dir}: fetch failed: ${error//$'\n'/ }"
+        return 1
+    fi
+    head=$(git -C $dir rev-parse HEAD)
+    if ! upstream=$(git -C $dir rev-parse --quiet --verify '@{upstream}' 2>/dev/null); then
+        log "${(D)dir}: not updated, branch $(git -C $dir branch --show-current) has no upstream"
+        return 0
+    fi
+    [[ $head == $upstream ]] && return 0
+    # Only local commits: pushing them is left to me
+    git -C $dir merge-base --is-ancestor $upstream $head && return 0
+    if ! git -C $dir merge-base --is-ancestor $head $upstream; then
+        blocked $dir $upstream "not updated, local commits diverge from upstream"
+        return 1
+    fi
+    if ! git -C $dir merge --ff-only --quiet $upstream 2>/dev/null; then
+        blocked $dir $upstream "not updated, local changes conflict with upstream"
+        return 1
+    fi
+    log "${(D)dir}: updated ${head[1,7]}..${upstream[1,7]}"
+    if ! git_https -C $dir submodule update --init --recursive --quiet 2>/dev/null; then
+        blocked $dir $upstream "submodules not updated, local changes conflict with upstream"
+        return 1
+    fi
+    after_pull $dir $head $upstream
+}
+
+# What a pulled change needs before it takes effect
+after_pull() {
+    local dir=$1 from=$2 to=$3
+    # The pulled version, not this one: it may link a new file or clone a new repo
+    [[ $dir == "$DOTFILES" ]] && { $DOTFILES/bin/dotfiles install; return }
+    git -C $dir diff --quiet $from $to -- lazy-lock.json || nvim --headless '+Lazy! restore' +qa
+}
+
+# A blocked repo stays blocked for many runs: notify once per upstream commit and message
+blocked() {
+    local dir=$1 upstream=$2 message=$3 seen=$STATE/blocked/${1//\//%}
+    log "${(D)dir}: $message"
+    [[ -f $seen && $(<$seen) == "$upstream $message" ]] && return
+    notify "${(D)dir}: $message"
+    mkdir -p ${seen:h}
+    print -r -- "$upstream $message" >$seen
+}
+
+status() {
+    local url dir file target
+    repo_status $DOTFILES
+    for url dir in $REPOS; do
+        repo_status $dir
+    done
+    for file target in $LINKS; do
+        is_linked $file $target || print -r -- "${(D)target}: not linked, run dotfiles install"
+    done
+}
+
+# Commits to pull are counted from the last fetch, which `update` does every 15 minutes
+repo_status() {
+    local dir=$1 ahead behind
+    local -a states
+    if [[ ! -d $dir/.git ]]; then
+        print -r -- "${(D)dir}: not cloned, run dotfiles install"
+        return
+    fi
+    [[ -n $(git -C $dir status --porcelain) ]] && states+=("uncommitted changes")
+    if ! git -C $dir rev-parse --quiet --verify '@{upstream}' &>/dev/null; then
+        states+=("branch $(git -C $dir branch --show-current) has no upstream")
+        print -r -- "${(D)dir}: ${(j:, :)states}"
+        return
+    fi
+    read ahead behind <<<$(git -C $dir rev-list --left-right --count 'HEAD...@{upstream}')
+    (( ahead )) && states+=("$ahead to push")
+    (( behind )) && states+=("$behind to pull")
+    print -r -- "${(D)dir}: ${(j:, :)states:-up to date}"
+}
+
+case ${1-} in
+install|update|status)
+    load_platform
+    $1
+    ;;
+*) die "usage: dotfiles install|update|status" ;;
+esac
