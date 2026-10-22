@@ -1,0 +1,110 @@
+# ---------------------------------------------
+#  Oh My Zsh
+# ---------------------------------------------
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME=""   # custom PROMPT is defined below
+
+# zsh-completions must be on fpath BEFORE oh-my-zsh.sh runs compinit
+fpath+=${ZSH_CUSTOM:-$ZSH/custom}/plugins/zsh-completions/src
+fpath+=$HOME/.theme/completions   # `theme` command
+
+# zsh-syntax-highlighting must stay last
+plugins=(git zsh-autosuggestions zsh-completions zsh-syntax-highlighting)
+
+source $ZSH/oh-my-zsh.sh
+
+# ---------------------------------------------
+#  Environment
+# ---------------------------------------------
+export EDITOR="nvim"
+export VISUAL="nvim"
+
+# Keep PATH free of duplicates
+typeset -U path PATH
+
+# ---------------------------------------------
+#  PATH
+# ---------------------------------------------
+path=(
+  "$HOME/.local/bin"
+  "$HOME/.dotfiles/bin"
+  "$HOME/.theme/bin"
+  "$HOME/.tools"
+  "$HOME/.cargo/bin"
+  "${GOPATH:-$HOME/go}/bin"
+  $path
+)
+
+# macOS only
+if [[ "$OSTYPE" == darwin* ]]; then
+  path=(
+    /opt/homebrew/opt/ruby/bin
+    /opt/homebrew/lib/ruby/gems/4.0.0/bin
+    $path
+  )
+  function co { printf '%s' "$(cat "$@")" | pbcopy }
+fi
+
+# Linux only
+if [[ "$OSTYPE" == linux* ]]; then
+  if command -v wl-copy >/dev/null; then
+    alias co='wl-copy'
+  elif command -v xclip >/dev/null; then
+    alias co='xclip -selection clipboard'
+  fi
+fi
+
+[[ -f "$HOME/.cargo/env" ]]      && . "$HOME/.cargo/env"
+[[ -f "$HOME/.local/bin/env" ]]  && . "$HOME/.local/bin/env"
+
+# ---------------------------------------------
+#  Prompt
+# ---------------------------------------------
+# Uses ANSI color names only: they come from the terminal palette, so `theme` recolors it
+PROMPT='%F{yellow}%n%f in %F{blue}%~%f $(git_prompt_info) %F{red}❯%f '
+
+# ---------------------------------------------
+#  Aliases
+# ---------------------------------------------
+# Navigation
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias cconf="cd $HOME/.config"
+alias cdd="cd $HOME/Desktop"
+alias cdown="cd $HOME/Downloads"
+
+# Tools
+alias vim='nvim'
+alias y='yazi'
+alias status='git status'
+
+# Listing
+alias lsa='ls -a'
+alias lla='ll -a'
+
+# Config
+alias vrc='nvim ~/.zshrc'
+alias src='clear && source ~/.zshrc'
+alias vgy='nvim ~/.config/ghostty/config.ghostty'
+
+# Archives
+alias mktar='tar -cvf'
+alias untar='tar -xvf'
+
+# ---------------------------------------------
+#  Completions and hooks (after OMZ, so compinit already ran)
+# ---------------------------------------------
+command -v ng      >/dev/null && source <(ng completion script)
+command -v docker  >/dev/null && source <(docker completion zsh)
+command -v direnv  >/dev/null && eval "$(direnv hook zsh)"
+
+# ---------------------------------------------
+#  Greeting
+# ---------------------------------------------
+command -v fastfetch >/dev/null && fastfetch
+
+# ---------------------------------------------
+#  This machine only (untracked): what installers append to ~/.zshrc goes there instead
+# ---------------------------------------------
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

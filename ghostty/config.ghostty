@@ -1,0 +1,4 @@
+# Colors and font come from ~/.theme: switch them with the `theme` command (see ~/.theme/AGENTS.md)
+config-file = ?~/.theme/generated/ghostty
+# `theme` reloads Ghostty on every switch (and while previewing): no toast each time
+app-notifications = no-config-reload
