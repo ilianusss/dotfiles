@@ -65,6 +65,9 @@ Add the include to the tool's own config with a comment pointing here, e.g.
 `# Colors from ~/.theme (the theme command)`. Use the "optional include" form when the tool has
 one, so the config still loads on a machine without `~/.theme`.
 
+If that config isn't in `~/.dotfiles` yet, move it to `~/.dotfiles/<tool>/` and add it to `LINKS`
+in `~/.dotfiles/bin/dotfiles`, then run `dotfiles install`: every machine gets the include.
+
 ## 5. Check and document
 
 ```sh
