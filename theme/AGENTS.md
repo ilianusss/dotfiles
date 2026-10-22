@@ -88,6 +88,7 @@ Only the terminal draws text: terminal Neovim and the shell get the font from Gh
    ```
    Each target runs in its own subshell; one failing doesn't stop the others.
 3. Point the tool's config at `~/.theme/generated/<tool>` (an include), never copy colors into it.
+   The config itself lives in `~/.dotfiles/<tool>/`, linked by `LINKS` in `~/.dotfiles/bin/dotfiles`.
 4. `theme apply`, check the tool, add a row to the table above.
 
 A long-running program that can watch files may instead read `current/` (or `colors/`) itself and
