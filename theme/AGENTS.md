@@ -77,6 +77,7 @@ draws no icons. Only the family follows the theme there: each tool keeps its own
 | Neovim | `~/.config/nvim/themes/colors/theme.lua` reads `current/colors/palette` | watcher on `generated/` in `lua/config/colorscheme.lua` (debounced) |
 | SketchyBar (macOS) | `generated/sketchybar`, sourced by `~/.dotfiles/sketchybar/sketchybarrc`. Bar `base00`, text `base05`, other workspaces `base04`, accent (icons, focused workspace) `base0D` with `base00` on it, warning (low battery) `base08`, font `nerd_font_family` | `targets/sketchybar.zsh` runs `sketchybar --reload` |
 | JankyBorders (macOS) | `generated/borders`, sourced by `~/.dotfiles/borders/bordersrc`. Focused window `base0D`, the others `base02` | `targets/borders.zsh` reruns `borders` with the new colors, which updates the running one |
+| superfile | `generated/superfile.toml`, linked as `theme.toml` into its theme folder by `LINKS`; its `config.toml` (`~/.dotfiles/superfile`) selects it with `theme = 'theme'`. Panel borders and selection `base0E`/`base02`, text `base05`, font from the terminal | none: read at start, so a running superfile keeps its colors until restarted |
 | Claude Code ([skin plugin](https://github.com/ilianusss/claude-skin), `.theme` mode: `"env": {"SKIN_THEME_HOME": "~/.theme"}` in `settings.json` of `~/.claude` and `~/.claude-team`) | every `colors/*/palette` (one skin each) and `current/colors`; no target | polls `generated/stamp` (2 s). The other way too: `/skin <palette>` runs `bin/theme colors <palette>` |
 
 ## Adding a target (a new tool)

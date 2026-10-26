@@ -73,13 +73,22 @@ alias ....='cd ../../..'
 alias cconf="cd $HOME/.config"
 alias cdd="cd $HOME/Desktop"
 alias cdown="cd $HOME/Downloads"
+alias cdot="cd $HOME/.dotfiles"
 
 # Tools
 alias vim='nvim'
-alias y='yazi'
 alias status='git status'
 alias coffee='sudo pmset -a disablesleep 1'
 alias tisane='sudo pmset -a disablesleep 0'
+alias sf='spf'
+
+# cd to the last directory superfile showed when it quits (cd_on_quit in its config)
+spf() {
+  local last=$HOME/.local/state/superfile/lastdir
+  [[ $OSTYPE == darwin* ]] && last="$HOME/Library/Application Support/superfile/lastdir"
+  command spf "$@"
+  [[ -f $last ]] && { source $last; rm -f -- $last }
+}
 
 # Listing
 alias lsa='ls -a'

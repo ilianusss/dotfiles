@@ -8,6 +8,8 @@ and kept up to date on every machine, macOS and Linux.
 
 - git, zsh, and an SSH key added to GitHub (for pushing)
 - Neovim and Ghostty: see the [nvim README](https://github.com/ilianusss/nvim) for what it needs
+- superfile, the file manager (`sf`): `brew install superfile` on macOS, see its
+  [install page](https://superfile.dev/getting-started/installation/) on Linux
 - macOS: the window manager, its bar and borders, Karabiner-Elements (right command as the window
   manager's key) and the Nerd Fonts the bar draws its icons with:
 
@@ -52,6 +54,7 @@ bin/        the dotfiles command
 platforms/  scheduling, notifications and the files to link, per OS
 zsh/        zshrc
 ghostty/    Ghostty config
+superfile/  superfile config
 theme/      colors and font of every tool
 aerospace/  AeroSpace config (macOS)
 sketchybar/ SketchyBar config and plugins (macOS)

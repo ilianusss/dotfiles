@@ -1,6 +1,6 @@
 ---
 name: add-target
-description: How to make another tool follow ~/.theme (colors and/or font): deciding whether it needs anything at all (ANSI colors), writing targets/<tool>.zsh with render() and reload() from the skeleton, pointing the tool's config at generated/<tool>, live reload, and checking it. Use when asked to theme, sync or hook up a new app (tmux, kitty, fzf, bat, lazygit, yazi, btop...) with the theme command. (Done: Claude Code, SketchyBar, JankyBorders.)
+description: How to make another tool follow ~/.theme (colors and/or font): deciding whether it needs anything at all (ANSI colors), writing targets/<tool>.zsh with render() and reload() from the skeleton, pointing the tool's config at generated/<tool>, live reload, and checking it. Use when asked to theme, sync or hook up a new app (tmux, kitty, fzf, bat, lazygit, superfile, btop...) with the theme command. (Done: Claude Code, SketchyBar, JankyBorders, superfile.)
 ---
 
 # Adding a target (a tool that follows the theme)
