@@ -1,0 +1,50 @@
+# Posterpole - https://github.com/ilof2/posterpole.nvim
+# base16: mapped by hand from lua/posterpole/colors.lua, with base00 and the terminal from the
+# author's Ghostty port (https://github.com/posterpole/ghostty), whose background differs from
+# the Neovim one (#141414). ANSI + terminal: that port.
+name="Posterpole"
+variant=dark
+
+# Neovim: ilof2/posterpole.nvim (lua/plugins/ui/colorscheme.lua in ~/.config/nvim)
+nvim_colorscheme=posterpole
+
+# base16 - https://github.com/tinted-theming/home/blob/main/styling.md
+base00="#24222a"   # bg (terminal)
+base01="#2c2c30"   # black
+base02="#4d4d4d"   # selection
+base03="#4d4d4d"   # comment
+base04="#a8968a"   # special
+base05="#aea79c"   # fg
+base06="#c6c0b9"   # bright white
+base07="#c6c0b9"
+base08="#a97070"   # keyword
+base09="#c7916b"   # constant
+base0A="#d9ac8c"   # bright yellow
+base0B="#738c7b"   # string
+base0C="#8fa3a2"   # directory
+base0D="#6c7f93"   # function
+base0E="#b894af"   # magenta
+base0F="#a8968a"   # special
+
+# terminal
+background="#24222a"
+foreground="#aea79c"
+cursor="#afb19d"
+selection_bg="#4d4d4d"
+selection_fg="#afa79d"
+color0="#2c2c30"
+color1="#a97070"
+color2="#778c73"
+color3="#cc9166"
+color4="#6c7f93"
+color5="#b894af"
+color6="#8ea4a2"
+color7="#a5adce"
+color8="#a5a59c"
+color9="#bc8f8f"
+color10="#92a38f"
+color11="#d9ac8c"
+color12="#8a99a8"
+color13="#ccb3c6"
+color14="#8fa4a2"
+color15="#c6c0b9"
