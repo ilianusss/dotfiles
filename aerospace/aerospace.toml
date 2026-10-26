@@ -2,9 +2,8 @@
 #
 # Every key is ctrl-alt (alt alone types { } [ ] | on an AZERTY Mac). AeroSpace binds physical
 # keys named after QWERTY, so the keys below were picked to read the same on AZERTY and QWERTY.
-# Karabiner (karabiner/karabiner.json) turns fn + any of them into ctrl-alt + it, except the arrows
-# (fn + arrows stays Home/End/Page Up/Page Down): fn-2 goes to workspace 2, fn-shift-2 sends there.
-# A new key here gets its line in karabiner.json too.
+# Karabiner (karabiner/karabiner.json) turns right command into ctrl-alt, so a new key here needs
+# nothing there: right command-2 goes to workspace 2, right command-shift-2 sends there.
 #
 #   ctrl-alt-h/j/k/l or arrows        focus left/down/up/right
 #   ctrl-alt-shift-h/j/k/l or arrows  move the window left/down/up/right
@@ -16,6 +15,7 @@
 #   ctrl-alt-s                        accordion, a stack (again: horizontal <-> vertical)
 #   ctrl-alt-shift-space              floating <-> tiled
 #   ctrl-alt-f                        fullscreen
+#   ctrl-alt-enter                    new Ghostty window, in this workspace
 #   ctrl-alt-minus / ctrl-alt-equal   shrink / grow: the two keys right of 0 (AZERTY: ")" and "-")
 #   ctrl-alt-esc                      service mode, then: esc reload the config, r reset the layout,
 #                                     f floating <-> tiled, backspace close the other windows,
@@ -56,6 +56,12 @@ gaps.outer.left =       8
 gaps.outer.bottom =     8
 gaps.outer.top =        40
 gaps.outer.right =      8
+
+# Ghostty tabs are macOS native tabs, which AeroSpace sees as windows of their own: without this
+# rule a new tab lands in another workspace. https://ghostty.org/docs/help/macos-tiling-wms
+[[on-window-detected]]
+    if.app-id = 'com.mitchellh.ghostty'
+    run = 'layout tiling'
 
 [[on-window-detected]]
     if.app-id = 'com.apple.systempreferences'
@@ -117,6 +123,10 @@ gaps.outer.right =      8
     ctrl-alt-s = 'layout accordion horizontal vertical'
     ctrl-alt-shift-space = 'layout floating tiling'
     ctrl-alt-f = 'fullscreen'
+
+    # A window, not a tab: AeroSpace sees a tab as a window and sends it to another workspace.
+    # Ghostty not running: activate starts it with its first window.
+    ctrl-alt-enter = '''exec-and-forget osascript -e 'if application "Ghostty" is running then tell application "Ghostty" to new window' -e 'tell application "Ghostty" to activate' '''
 
     ctrl-alt-minus = 'resize smart -50'
     ctrl-alt-equal = 'resize smart +50'

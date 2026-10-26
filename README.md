@@ -8,8 +8,8 @@ and kept up to date on every machine, macOS and Linux.
 
 - git, zsh, and an SSH key added to GitHub (for pushing)
 - Neovim and Ghostty: see the [nvim README](https://github.com/ilianusss/nvim) for what it needs
-- macOS: the window manager, its bar and borders, Karabiner-Elements (fn as the window manager's
-  key) and the Nerd Fonts the bar draws its icons with:
+- macOS: the window manager, its bar and borders, Karabiner-Elements (right command as the window
+  manager's key) and the Nerd Fonts the bar draws its icons with:
 
   ```sh
   brew install --cask nikitabobko/tap/aerospace karabiner-elements
@@ -35,9 +35,10 @@ and kept up to date on every machine, macOS and Linux.
      "Displays have separate Spaces" (then log out)
 
 4. macOS: open Karabiner-Elements and follow its setup: turn on its driver in System Settings >
-   General > Login Items & Extensions > Driver Extensions, allow Input Monitoring, choose the ISO
-   keyboard type. fn now drives AeroSpace (keys at the top of `aerospace/aerospace.toml`), and
-   option-fn switches the layout (fn alone does nothing).
+   General > Login Items & Extensions > Driver Extensions, allow Input Monitoring, choose the ANSI
+   keyboard type (ISO swaps @ and <, even on a French ISO keyboard). Right command now drives
+   AeroSpace (keys at the top of `aerospace/aerospace.toml`), and option-fn switches the layout
+   (fn alone does nothing).
 
 ## Commands
 
@@ -55,7 +56,7 @@ theme/      colors and font of every tool
 aerospace/  AeroSpace config (macOS)
 sketchybar/ SketchyBar config and plugins (macOS)
 borders/    JankyBorders config (macOS)
-karabiner/  Karabiner-Elements config: fn as the AeroSpace key (macOS)
+karabiner/  Karabiner-Elements config: right command as the AeroSpace key (macOS)
 tests/      tests/run
 ```
 

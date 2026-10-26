@@ -28,7 +28,7 @@ theme/                -> ~/.theme: colors and font of every tool, see theme/AGEN
 aerospace/            aerospace.toml -> ~/.config/aerospace/ (macOS): the tiling window manager
 sketchybar/           -> ~/.config/sketchybar (macOS): the bar, sketchybarrc + plugins/
 borders/bordersrc     -> ~/.config/borders/bordersrc (macOS): the focused window's border
-karabiner/            -> ~/.config/karabiner (macOS): fn as the AeroSpace key
+karabiner/            -> ~/.config/karabiner (macOS): right command as the AeroSpace key
 tests/                tests/run and the test_* functions of tests/*.zsh
 ```
 
@@ -41,13 +41,14 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
   login and starts SketchyBar and JankyBorders. The keys use `ctrl-alt`: `alt` alone types
   `{ } [ ] |` on an AZERTY Mac. AeroSpace binds physical keys, so they are the same on AZERTY and
   QWERTY.
-- Karabiner-Elements makes fn the one key to hold: `karabiner/karabiner.json` turns fn + each
-  AeroSpace key into ctrl-alt + that key, so a key added to `aerospace.toml` gets a line there too.
-  It also makes option-fn switch between the French and U.S. layouts, and fn alone do nothing: the
-  macOS setting for fn alone ignores a value written with `defaults`. The whole folder is linked,
-  not the file: Karabiner stops seeing changes to a linked `karabiner.json`, and it rewrites the
-  file when its settings are changed in its app. It is plain JSON, edited by hand: no comments, so
-  every rule says what it does in its `description`. Karabiner reloads it on save.
+- Karabiner-Elements makes right command the one key to hold: `karabiner/karabiner.json` turns it
+  into ctrl-alt, so every AeroSpace key works with it and a new key needs no line there. Right
+  command is no longer command: left command keeps the app shortcuts. It also makes option-fn
+  switch between the French and U.S. layouts, and fn alone do nothing: the macOS setting for fn
+  alone ignores a value written with `defaults`. The whole folder is linked, not the file:
+  Karabiner stops seeing changes to a linked `karabiner.json`, and it rewrites the file when its
+  settings are changed in its app. It is plain JSON, edited by hand: no comments, so every rule
+  says what it does in its `description`. Karabiner reloads it on save.
 - On every workspace change, and after a window is sent to another workspace, AeroSpace triggers
   the `aerospace_workspace_change` event; `sketchybar/plugins/spaces.zsh` then redraws the
   workspaces of each display.
