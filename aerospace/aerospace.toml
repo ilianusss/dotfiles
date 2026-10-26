@@ -1,0 +1,145 @@
+# AeroSpace: tiles the windows, starts SketchyBar and JankyBorders. Docs: https://nikitabobko.github.io/AeroSpace/guide
+#
+# Every key is ctrl-alt (alt alone types { } [ ] | on an AZERTY Mac). AeroSpace binds physical
+# keys named after QWERTY, so the keys below were picked to read the same on AZERTY and QWERTY.
+# Karabiner (karabiner/karabiner.json) turns right command into ctrl-alt, so a new key here needs
+# nothing there: right command-2 goes to workspace 2, right command-shift-2 sends there.
+#
+#   ctrl-alt-h/j/k/l or arrows        focus left/down/up/right
+#   ctrl-alt-shift-h/j/k/l or arrows  move the window left/down/up/right
+#   ctrl-alt-1..9                     go to workspace 1..9
+#   ctrl-alt-shift-1..9               send the window to workspace 1..9 (you stay where you are)
+#   ctrl-alt-tab                      back to the previous workspace
+#   ctrl-alt-shift-tab                send the workspace to the next display
+#   ctrl-alt-t                        tiles (again: horizontal <-> vertical)
+#   ctrl-alt-s                        accordion, a stack (again: horizontal <-> vertical)
+#   ctrl-alt-shift-space              floating <-> tiled
+#   ctrl-alt-f                        fullscreen
+#   ctrl-alt-enter                    new Ghostty window, in this workspace
+#   ctrl-alt-minus / ctrl-alt-equal   shrink / grow: the two keys right of 0 (AZERTY: ")" and "-")
+#   ctrl-alt-esc                      service mode, then: esc reload the config, r reset the layout,
+#                                     f floating <-> tiled, backspace close the other windows,
+#                                     ctrl-alt-shift-h/j/k/l join with the window on that side
+
+config-version = 2
+
+start-at-login = true
+auto-reload-config = true
+
+# exec-and-forget: started once, even when AeroSpace restarts. borders runs ~/.config/borders/bordersrc.
+after-startup-command = ['exec-and-forget sketchybar', 'exec-and-forget borders']
+
+# Tells the bar which workspace is focused (sketchybar/plugins/spaces.zsh)
+exec-on-workspace-change = ['/bin/bash', '-c',
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+]
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+accordion-padding = 30
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+automatically-unhide-macos-hidden-apps = false
+
+# Kept even when empty, so the bar always knows them; it only shows the ones in use
+persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+key-mapping.preset = 'qwerty'
+
+# The top gap leaves room for the bar: its height (32, sketchybar/sketchybarrc) + 8
+gaps.inner.horizontal = 8
+gaps.inner.vertical =   8
+gaps.outer.left =       8
+gaps.outer.bottom =     8
+gaps.outer.top =        40
+gaps.outer.right =      8
+
+# Ghostty tabs are macOS native tabs, which AeroSpace sees as windows of their own: without this
+# rule a new tab lands in another workspace. https://ghostty.org/docs/help/macos-tiling-wms
+[[on-window-detected]]
+    if.app-id = 'com.mitchellh.ghostty'
+    run = 'layout tiling'
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.systempreferences'
+    run = 'layout floating'
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.calculator'
+    run = 'layout floating'
+
+[[on-window-detected]]
+    if.app-id = 'com.apple.finder'
+    if.window-title-regex-substring = ' Info$'
+    run = 'layout floating'
+
+[mode.main.binding]
+    ctrl-alt-h = 'focus left'
+    ctrl-alt-j = 'focus down'
+    ctrl-alt-k = 'focus up'
+    ctrl-alt-l = 'focus right'
+    ctrl-alt-left = 'focus left'
+    ctrl-alt-down = 'focus down'
+    ctrl-alt-up = 'focus up'
+    ctrl-alt-right = 'focus right'
+
+    ctrl-alt-shift-h = 'move left'
+    ctrl-alt-shift-j = 'move down'
+    ctrl-alt-shift-k = 'move up'
+    ctrl-alt-shift-l = 'move right'
+    ctrl-alt-shift-left = 'move left'
+    ctrl-alt-shift-down = 'move down'
+    ctrl-alt-shift-up = 'move up'
+    ctrl-alt-shift-right = 'move right'
+
+    ctrl-alt-1 = 'workspace 1'
+    ctrl-alt-2 = 'workspace 2'
+    ctrl-alt-3 = 'workspace 3'
+    ctrl-alt-4 = 'workspace 4'
+    ctrl-alt-5 = 'workspace 5'
+    ctrl-alt-6 = 'workspace 6'
+    ctrl-alt-7 = 'workspace 7'
+    ctrl-alt-8 = 'workspace 8'
+    ctrl-alt-9 = 'workspace 9'
+
+    # The focused workspace doesn't change, so exec-on-workspace-change doesn't run: tell the bar
+    ctrl-alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-3 = ['move-node-to-workspace 3', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-4 = ['move-node-to-workspace 4', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-5 = ['move-node-to-workspace 5', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-6 = ['move-node-to-workspace 6', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-7 = ['move-node-to-workspace 7', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-8 = ['move-node-to-workspace 8', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-9 = ['move-node-to-workspace 9', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+
+    ctrl-alt-tab = 'workspace-back-and-forth'
+    ctrl-alt-shift-tab = ['move-workspace-to-monitor --wrap-around next', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+
+    ctrl-alt-t = 'layout tiles horizontal vertical'
+    ctrl-alt-s = 'layout accordion horizontal vertical'
+    ctrl-alt-shift-space = 'layout floating tiling'
+    ctrl-alt-f = 'fullscreen'
+
+    # A window, not a tab: AeroSpace sees a tab as a window and sends it to another workspace.
+    # Ghostty not running: activate starts it with its first window.
+    ctrl-alt-enter = '''exec-and-forget osascript -e 'if application "Ghostty" is running then tell application "Ghostty" to new window' -e 'tell application "Ghostty" to activate' '''
+
+    ctrl-alt-minus = 'resize smart -50'
+    ctrl-alt-equal = 'resize smart +50'
+
+    ctrl-alt-esc = 'mode service'
+
+[mode.service.binding]
+    esc = ['reload-config', 'mode main']
+    r = ['flatten-workspace-tree', 'mode main']
+    f = ['layout floating tiling', 'mode main']
+    backspace = ['close-all-windows-but-current', 'mode main']
+
+    ctrl-alt-shift-h = ['join-with left', 'mode main']
+    ctrl-alt-shift-j = ['join-with down', 'mode main']
+    ctrl-alt-shift-k = ['join-with up', 'mode main']
+    ctrl-alt-shift-l = ['join-with right', 'mode main']

@@ -36,6 +36,17 @@ test_status_reports_a_missing_repo_and_files_not_linked() {
 ~/.theme: not linked, run dotfiles install"
 }
 
+test_status_reports_a_file_the_platform_adds_that_is_not_linked() {
+    dotfiles install >/dev/null || fail "exit $?"
+    local os=${(L)$(uname -s)} output
+    print -r -- 'LINKS+=(aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml)' >>$DOTFILES/platforms/$os.zsh
+    output=$(dotfiles status) || fail "exit $?"
+    assert_eq "$output" "~/.dotfiles: uncommitted changes
+~/.config/nvim: up to date
+~/.claude: up to date
+~/.config/aerospace/aerospace.toml: not linked, run dotfiles install"
+}
+
 test_status_reports_a_branch_without_upstream() {
     dotfiles install >/dev/null || fail "exit $?"
     git -C ~/.config/nvim checkout -qb experiment

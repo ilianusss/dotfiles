@@ -2,3 +2,4 @@
 font_family="<Exact Family Name>"   # as printed by `ghostty +list-fonts`
 font_size=13
 # font_features="-calt, -liga, -dlig"   # optional: OpenType features (here: ligatures off)
+# nerd_font_family="<Name> Nerd Font"    # optional: its Nerd Font build, for SketchyBar (brew install --cask font-<name>-nerd-font)

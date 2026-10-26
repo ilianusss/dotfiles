@@ -1,3 +1,5 @@
 # JetBrains Mono — built into Ghostty (with Nerd Font icons), nothing to install
 font_family="JetBrains Mono"
 font_size=13
+# SketchyBar: brew install --cask font-jetbrains-mono-nerd-font
+nerd_font_family="JetBrainsMono Nerd Font"

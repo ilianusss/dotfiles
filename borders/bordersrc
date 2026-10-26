@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+# JankyBorders: a border around the focused window. Started by AeroSpace (aerospace.toml) as
+# `borders`, which runs this file. Colors come from ~/.theme (the theme command), which updates the
+# running borders on every switch. Options: man borders
+
+emulate -L zsh
+
+colors=(active_color=0xffd4d4d4 inactive_color=0xff3a3a3a)
+[[ -r ~/.theme/generated/borders ]] && source ~/.theme/generated/borders
+
+borders style=round width=5.0 hidpi=off $colors

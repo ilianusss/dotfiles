@@ -78,6 +78,8 @@ alias cdown="cd $HOME/Downloads"
 alias vim='nvim'
 alias y='yazi'
 alias status='git status'
+alias coffee='sudo pmset -a disablesleep 1'
+alias tisane='sudo pmset -a disablesleep 0'
 
 # Listing
 alias lsa='ls -a'

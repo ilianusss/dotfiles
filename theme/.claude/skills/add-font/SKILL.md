@@ -1,6 +1,6 @@
 ---
 name: add-font
-description: How to add (or change, or remove) a font in ~/.theme — installing it, finding its exact family name, writing fonts/<name>/font from the skeleton (size, ligatures/OpenType features), and checking it in Ghostty. Use when asked to add, install, switch, resize or tweak a terminal/editor font.
+description: How to add (or change, or remove) a font in ~/.theme: installing it and its Nerd Font build, finding the exact family names, writing fonts/<name>/font from the skeleton (size, ligatures/OpenType features, nerd_font_family), and checking it in Ghostty and SketchyBar. Use when asked to add, install, switch, resize or tweak a terminal/editor font.
 ---
 
 # Adding a font
@@ -18,8 +18,19 @@ brew search font-<name>             # Homebrew casks, e.g. font-fira-code, font-
 brew install --cask font-<name>
 ```
 
-Linux: the distro package or `~/.local/share/fonts/` + `fc-cache -f`. Nerd Font variants are
-not needed: Ghostty draws Nerd Font icons itself.
+Linux: the distro package or `~/.local/share/fonts/` + `fc-cache -f`.
+
+The terminal needs no Nerd Font: Ghostty draws the icons itself. SketchyBar (macOS) draws outside
+the terminal, so it needs the Nerd Font build of the font installed, for the icons:
+
+```sh
+brew search nerd-font | grep -i <name>   # e.g. font-jetbrains-mono-nerd-font
+brew install --cask font-<name>-nerd-font
+```
+
+No Nerd Font build exists for a few fonts: pick the closest one (Menlo -> Meslo LG) or leave
+`nerd_font_family` out, and the bar draws its text without icons. Add the cask to the macOS
+prerequisites in `~/.dotfiles/README.md`, so every Mac gets it.
 
 ## 2. Find the exact family name
 
@@ -29,6 +40,11 @@ ghostty +list-fonts | grep -i <name>    # lines without indentation are family n
 
 Use the family exactly as printed (`"Fira Code"`, not `FiraCode-Regular`). Fonts built into
 Ghostty don't appear in that list.
+
+The Nerd Font build has its own family, without spaces in the font's name. Ghostty lists only its
+`Mono` variant, so ask fontconfig (`brew install fontconfig` if missing) or Font Book:
+`fc-list : family | grep -i "nerd font"` prints `JetBrainsMono Nerd Font,JetBrainsMono NF`. Take
+the plain one before the comma, not `... Nerd Font Mono` (narrow icons) or `... Nerd Font Propo`.
 
 ## 3. Write the file from the skeleton
 
@@ -40,6 +56,8 @@ mkdir fonts/<name> && cp .claude/skills/add-font/font.skeleton fonts/<name>/font
   safest start.
 - `font_features` (optional): `-calt, -liga, -dlig` turns ligatures off; stylistic sets look like
   `ss01, ss02`, see the font's README or https://fontdrop.info.
+- `nerd_font_family` (optional): the Nerd Font family from step 2, for SketchyBar. Default:
+  `font_family`.
 
 ## 4. Check
 
@@ -47,6 +65,7 @@ mkdir fonts/<name> && cp .claude/skills/add-font/font.skeleton fonts/<name>/font
 theme preview font <name>
 theme font <name>          # Ghostty reloads; zoomed windows keep their zoom (cmd+0 resets)
 ghostty +validate-config
+sketchybar --query front_app | grep font   # macOS: the bar uses nerd_font_family
 ```
 
 If Ghostty silently shows its default font, the family name is wrong (step 2).

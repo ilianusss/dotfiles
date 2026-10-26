@@ -1,7 +1,8 @@
 # ~/.theme
 
 One place for the colors and the font of every tool on this machine (macOS and Linux). Pick them
-with the `theme` command; every tool (Ghostty, the zsh prompt, Neovim, Claude Code) follows, live.
+with the `theme` command; every tool (Ghostty, the zsh prompt, Neovim, Claude Code, and on macOS
+SketchyBar and JankyBorders) follows, live.
 It lives in `~/.dotfiles/theme`; `~/.theme` is a link to it, made by `dotfiles install`.
 
 ## Commands (`bin/theme`, on PATH via ~/.zshrc, with zsh completion)
@@ -58,9 +59,14 @@ value, no shell expansion.
 font_family="JetBrains Mono"   # exact family name: `ghostty +list-fonts`
 font_size=13
 font_features="-calt, -liga"   # optional, OpenType features (ligatures off here)
+nerd_font_family="JetBrainsMono Nerd Font"   # optional, default font_family
 ```
 
-Only the terminal draws text: terminal Neovim and the shell get the font from Ghostty.
+The terminal draws most text: terminal Neovim and the shell get the font from Ghostty, which has
+the font built in and adds Nerd Font icons itself. Tools that draw outside the terminal
+(SketchyBar) use `nerd_font_family` instead: the Nerd Font build of the same font, installed on the
+system, so the icons draw too. Without it they get `font_family`, which must then be installed and
+draws no icons. Only the family follows the theme there: each tool keeps its own size.
 
 ## How each tool follows
 
@@ -69,6 +75,8 @@ Only the terminal draws text: terminal Neovim and the shell get the font from Gh
 | Ghostty | `generated/ghostty`, included by its config (`config-file = ?~/.theme/generated/ghostty` in `~/.dotfiles/ghostty/config.ghostty`, linked to `~/.config/ghostty/config.ghostty` on macOS and Linux) | `targets/ghostty.zsh` sends SIGUSR2 = reload config (toast disabled with `app-notifications = no-config-reload`) |
 | zsh prompt | nothing: it uses ANSI color names (`%F{green}`), which are the terminal palette | with Ghostty |
 | Neovim | `~/.config/nvim/themes/colors/theme.lua` reads `current/colors/palette` | watcher on `generated/` in `lua/config/colorscheme.lua` (debounced) |
+| SketchyBar (macOS) | `generated/sketchybar`, sourced by `~/.dotfiles/sketchybar/sketchybarrc`. Bar `base00`, text `base05`, other workspaces `base04`, accent (icons, focused workspace) `base0D` with `base00` on it, warning (low battery) `base08`, font `nerd_font_family` | `targets/sketchybar.zsh` runs `sketchybar --reload` |
+| JankyBorders (macOS) | `generated/borders`, sourced by `~/.dotfiles/borders/bordersrc`. Focused window `base0D`, the others `base02` | `targets/borders.zsh` reruns `borders` with the new colors, which updates the running one |
 | Claude Code ([skin plugin](https://github.com/ilianusss/claude-skin), `.theme` mode: `"env": {"SKIN_THEME_HOME": "~/.theme"}` in `settings.json` of `~/.claude` and `~/.claude-team`) | every `colors/*/palette` (one skin each) and `current/colors`; no target | polls `generated/stamp` (2 s). The other way too: `/skin <palette>` runs `bin/theme colors <palette>` |
 
 ## Adding a target (a new tool)
@@ -88,7 +96,8 @@ Only the terminal draws text: terminal Neovim and the shell get the font from Gh
    ```
    Each target runs in its own subshell; one failing doesn't stop the others.
 3. Point the tool's config at `~/.theme/generated/<tool>` (an include), never copy colors into it.
-   The config itself lives in `~/.dotfiles/<tool>/`, linked by `LINKS` in `~/.dotfiles/bin/dotfiles`.
+   The config itself lives in `~/.dotfiles/<tool>/`, linked by `LINKS` in `~/.dotfiles/bin/dotfiles`
+   (or in `~/.dotfiles/platforms/<os>.zsh` for a tool of one OS only, like SketchyBar).
 4. `theme apply`, check the tool, add a row to the table above.
 
 A long-running program that can watch files may instead read `current/` (or `colors/`) itself and
@@ -100,7 +109,7 @@ watch `generated/stamp` (rewritten on every apply), like Neovim and the Claude C
 | Skill | For |
 |---|---|
 | `add-palette` | a color palette, tool by tool: base16, terminal ANSI, Neovim colorscheme, Claude Code skin; light variants; Homebrew Light recipe |
-| `add-font` | a font: install, exact family name, size, ligatures |
+| `add-font` | a font: install, exact family name, size, ligatures, its Nerd Font build for SketchyBar |
 | `add-target` | make another tool follow the theme (or decide it needs nothing) |
 
 ## Conventions

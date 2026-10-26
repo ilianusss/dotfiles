@@ -2,6 +2,7 @@
 
 The development environment, the same on every machine (macOS and Linux): config files linked from
 this repo, a few repos cloned in place, all kept up to date by `dotfiles update` every 15 minutes.
+On macOS it adds the window manager: AeroSpace, SketchyBar, JankyBorders and Karabiner-Elements.
 
 ## Commands (`bin/dotfiles`, on PATH via zsh/zshrc)
 
@@ -19,15 +20,43 @@ changes, so a file or repo added here reaches every machine.
 
 ```
 bin/dotfiles          the command; LINKS, REPOS and ZSH_DEPS at its top
-platforms/<os>.zsh    schedule() and notify() for one OS: darwin (launchd), linux (systemd timer)
+platforms/<os>.zsh    schedule() and notify() for one OS: darwin (launchd), linux (systemd timer),
+                      and the LINKS only that OS needs
 zsh/zshrc             -> ~/.zshrc; machine-only lines go in the untracked ~/.zshrc.local
 ghostty/config.ghostty -> ~/.config/ghostty/config.ghostty (read on macOS too)
 theme/                -> ~/.theme: colors and font of every tool, see theme/AGENTS.md
+aerospace/            aerospace.toml -> ~/.config/aerospace/ (macOS): the tiling window manager
+sketchybar/           -> ~/.config/sketchybar (macOS): the bar, sketchybarrc + plugins/
+borders/bordersrc     -> ~/.config/borders/bordersrc (macOS): the focused window's border
+karabiner/            -> ~/.config/karabiner (macOS): right command as the AeroSpace key
 tests/                tests/run and the test_* functions of tests/*.zsh
 ```
 
 Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config/nvim` and
 `ilianusss/.claude` in `~/.claude`. oh-my-zsh and its plugins are only cloned when missing.
+
+## Window manager (macOS)
+
+- AeroSpace tiles the windows (`aerospace/aerospace.toml`, its header lists the keys). It starts at
+  login and starts SketchyBar and JankyBorders. The keys use `ctrl-alt`: `alt` alone types
+  `{ } [ ] |` on an AZERTY Mac. AeroSpace binds physical keys, so they are the same on AZERTY and
+  QWERTY.
+- Karabiner-Elements makes right command the one key to hold: `karabiner/karabiner.json` turns it
+  into ctrl-alt, so every AeroSpace key works with it and a new key needs no line there. Right
+  command is no longer command: left command keeps the app shortcuts. It also makes option-fn
+  switch between the French and U.S. layouts, and fn alone do nothing: the macOS setting for fn
+  alone ignores a value written with `defaults`. The whole folder is linked, not the file:
+  Karabiner stops seeing changes to a linked `karabiner.json`, and it rewrites the file when its
+  settings are changed in its app. It is plain JSON, edited by hand: no comments, so every rule
+  says what it does in its `description`. Karabiner reloads it on save.
+- On every workspace change, and after a window is sent to another workspace, AeroSpace triggers
+  the `aerospace_workspace_change` event; `sketchybar/plugins/spaces.zsh` then redraws the
+  workspaces of each display.
+- Colors and font follow the theme: `theme/targets/sketchybar.zsh` and `theme/targets/borders.zsh`
+  render `~/.theme/generated/{sketchybar,borders}`, sourced by `sketchybarrc` and `bordersrc`.
+- The bar is 32 px high (`sketchybarrc`), and AeroSpace leaves it `gaps.outer.top = 40`: change
+  both together.
+- Installing the apps and the macOS settings they need is manual: see the README.
 
 ## How `update` treats a repo
 
@@ -42,7 +71,9 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
 
 ## Adding
 
-- A config file: put it in a folder named after the tool, add a line to `LINKS`.
+- A config file: put it in a folder named after the tool, add a line to `LINKS`. A file only one OS
+  uses goes in `LINKS+=(...)` at the top of `platforms/<os>.zsh` instead, so the other OS neither
+  links it nor reports it in `status`. Its colors and font come from `~/.theme` (theme/AGENTS.md).
 - A repo to keep up to date: add `url path` to `REPOS`. If a pulled change needs a step to take
   effect, add it to `after_pull`.
 - A platform: `platforms/<uname -s, lowercase>.zsh` defining `schedule` and `notify`. A Linux distro
@@ -65,4 +96,14 @@ dotfiles status
 tail ~/.local/state/dotfiles/update.log
 launchctl print gui/$UID/com.github.ilianusss.dotfiles      # macOS: the scheduled agent
 systemctl --user list-timers dotfiles-update.timer          # Linux: the timer
+```
+
+macOS window manager:
+
+```sh
+zsh -n sketchybar/sketchybarrc sketchybar/plugins/*.zsh borders/bordersrc
+aerospace reload-config && aerospace list-workspaces --all  # AeroSpace accepts its config
+sketchybar --reload && sketchybar --query bar               # the bar runs with the theme colors
+python3 -m json.tool karabiner/karabiner.json >/dev/null    # valid JSON
+tail /var/log/karabiner/core_service.log                    # "core_configuration is updated"
 ```

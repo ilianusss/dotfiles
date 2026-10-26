@@ -65,7 +65,10 @@ apply() {
         [[ -n $first ]] && ln -sfn ../${DIRS[$k]}/$first $CUR/$k
     done
     load_palette
-    [[ -f $CUR/font/font ]] && source $CUR/font/font
+    if [[ -f $CUR/font/font ]]; then
+        source $CUR/font/font
+        : ${nerd_font_family:=$font_family}
+    fi
     THEME_COLORS=$(selected colors) THEME_FONT=$(selected font)
     local t
     for t in $THEME_HOME/targets/*.zsh(N); do

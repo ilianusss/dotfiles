@@ -16,6 +16,7 @@ What each tool takes from it — the steps below follow this order:
 | Ghostty, zsh prompt, ANSI tools (fzf, bat, delta, lazygit...) | `color0..15`, `background`, `foreground`, `cursor*`, `selection_*` (default: from base16) | 3 |
 | Neovim | `nvim_colorscheme`, else mini.base16 from base16 | 4 |
 | Claude Code (skin plugin, `.theme` mode) | `claude_skin`, `claude_<slot>`, else derived from base16 | 5 |
+| SketchyBar, JankyBorders (macOS) | base16 only (`base00 02 04 05 08 0D`, roles in `AGENTS.md`): nothing to add | 6 |
 
 ## 1. Import it if a base16 scheme exists (fastest)
 
@@ -133,7 +134,9 @@ nvim --headless "+lua print(vim.g.colors_name)" +qa
 ```
 
 Look at: the prompt (ANSI green/blue/magenta), `ls --color`, a git diff, comments in Neovim
-(base03 must stay readable on base00), a visual selection. In Claude Code: `/skin list` lists the
+(base03 must stay readable on base00), a visual selection. On macOS: the bar (base05 and base04
+readable on base00, base00 readable on base0D for the focused workspace) and the border of the
+focused window (base0D). In Claude Code: `/skin list` lists the
 new palette (missing = a base16 key is missing or a hex is malformed), `/skin gallery` shows every
 element in its colors.
 

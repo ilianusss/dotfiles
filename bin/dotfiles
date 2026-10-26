@@ -12,7 +12,7 @@ zmodload zsh/system zsh/datetime
 DOTFILES=${DOTFILES:-${0:A:h:h}}
 STATE=${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles
 
-# File in this repo -> where it is linked
+# File in this repo -> where it is linked. platforms/<os>.zsh adds the files of one OS only.
 LINKS=(
     zsh/zshrc              ~/.zshrc
     ghostty/config.ghostty ~/.config/ghostty/config.ghostty
