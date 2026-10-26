@@ -2,6 +2,9 @@
 #
 # Every key is ctrl-alt (alt alone types { } [ ] | on an AZERTY Mac). AeroSpace binds physical
 # keys named after QWERTY, so the keys below were picked to read the same on AZERTY and QWERTY.
+# Karabiner (karabiner/karabiner.json) turns fn + any of them into ctrl-alt + it, except the arrows
+# (fn + arrows stays Home/End/Page Up/Page Down): fn-2 goes to workspace 2, fn-shift-2 sends there.
+# A new key here gets its line in karabiner.json too.
 #
 #   ctrl-alt-h/j/k/l or arrows        focus left/down/up/right
 #   ctrl-alt-shift-h/j/k/l or arrows  move the window left/down/up/right

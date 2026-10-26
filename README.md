@@ -1,17 +1,18 @@
 # dotfiles
 
 My development environment (zsh, Ghostty, Neovim, Claude Code, the shared theme, and on macOS the
-AeroSpace window manager with SketchyBar and JankyBorders), linked into place and kept up to date on
-every machine, macOS and Linux.
+AeroSpace window manager with SketchyBar, JankyBorders and Karabiner-Elements), linked into place
+and kept up to date on every machine, macOS and Linux.
 
 ## Prerequisites
 
 - git, zsh, and an SSH key added to GitHub (for pushing)
 - Neovim and Ghostty: see the [nvim README](https://github.com/ilianusss/nvim) for what it needs
-- macOS: the window manager, its bar and borders, and the Nerd Fonts the bar draws its icons with:
+- macOS: the window manager, its bar and borders, Karabiner-Elements (fn as the window manager's
+  key) and the Nerd Fonts the bar draws its icons with:
 
   ```sh
-  brew install --cask nikitabobko/tap/aerospace
+  brew install --cask nikitabobko/tap/aerospace karabiner-elements
   brew install --cask font-jetbrains-mono-nerd-font font-meslo-lg-nerd-font
   brew install FelixKratz/formulae/sketchybar FelixKratz/formulae/borders
   ```
@@ -33,6 +34,11 @@ every machine, macOS and Linux.
    - Desktop & Dock > Mission Control: turn on "Group windows by application" and turn off
      "Displays have separate Spaces" (then log out)
 
+4. macOS: open Karabiner-Elements and follow its setup: turn on its driver in System Settings >
+   General > Login Items & Extensions > Driver Extensions, allow Input Monitoring, choose the ISO
+   keyboard type. fn now drives AeroSpace (keys at the top of `aerospace/aerospace.toml`), and
+   option-fn switches the layout (fn alone does nothing).
+
 ## Commands
 
 `dotfiles install`, `dotfiles update` and `dotfiles status` are described in
@@ -49,6 +55,7 @@ theme/      colors and font of every tool
 aerospace/  AeroSpace config (macOS)
 sketchybar/ SketchyBar config and plugins (macOS)
 borders/    JankyBorders config (macOS)
+karabiner/  Karabiner-Elements config: fn as the AeroSpace key (macOS)
 tests/      tests/run
 ```
 

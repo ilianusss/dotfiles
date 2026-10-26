@@ -5,6 +5,7 @@ LINKS+=(
     aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml
     sketchybar               ~/.config/sketchybar
     borders/bordersrc        ~/.config/borders/bordersrc
+    karabiner                ~/.config/karabiner
 )
 
 LABEL=com.github.ilianusss.dotfiles
