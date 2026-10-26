@@ -6,6 +6,8 @@ LINKS+=(
     sketchybar               ~/.config/sketchybar
     borders/bordersrc        ~/.config/borders/bordersrc
     karabiner                ~/.config/karabiner
+    superfile/config.toml    ~/'Library/Application Support/superfile/config.toml'
+    theme/generated/superfile.toml ~/'Library/Application Support/superfile/theme/theme.toml'
 )
 
 LABEL=com.github.ilianusss.dotfiles
