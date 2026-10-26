@@ -19,7 +19,8 @@ changes, so a file or repo added here reaches every machine.
 
 ```
 bin/dotfiles          the command; LINKS, REPOS and ZSH_DEPS at its top
-platforms/<os>.zsh    schedule() and notify() for one OS: darwin (launchd), linux (systemd timer)
+platforms/<os>.zsh    schedule() and notify() for one OS: darwin (launchd), linux (systemd timer),
+                      and the LINKS only that OS needs
 zsh/zshrc             -> ~/.zshrc; machine-only lines go in the untracked ~/.zshrc.local
 ghostty/config.ghostty -> ~/.config/ghostty/config.ghostty (read on macOS too)
 theme/                -> ~/.theme: colors and font of every tool, see theme/AGENTS.md
@@ -42,7 +43,9 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
 
 ## Adding
 
-- A config file: put it in a folder named after the tool, add a line to `LINKS`.
+- A config file: put it in a folder named after the tool, add a line to `LINKS`. A file only one OS
+  uses goes in `LINKS+=(...)` at the top of `platforms/<os>.zsh` instead, so the other OS neither
+  links it nor reports it in `status`.
 - A repo to keep up to date: add `url path` to `REPOS`. If a pulled change needs a step to take
   effect, add it to `after_pull`.
 - A platform: `platforms/<uname -s, lowercase>.zsh` defining `schedule` and `notify`. A Linux distro

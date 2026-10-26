@@ -28,7 +28,7 @@ and kept up to date on every machine, macOS and Linux.
 
 ```
 bin/        the dotfiles command
-platforms/  scheduling and notifications per OS
+platforms/  scheduling, notifications and the files to link, per OS
 zsh/        zshrc
 ghostty/    Ghostty config
 theme/      colors and font of every tool

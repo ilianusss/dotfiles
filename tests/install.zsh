@@ -63,3 +63,10 @@ test_install_applies_the_theme_then_schedules_the_update() {
     assert_eq "$(calls)" "theme apply
 schedule"
 }
+
+test_install_links_the_files_the_platform_adds() {
+    local os=${(L)$(uname -s)}
+    print -r -- 'LINKS+=(aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml)' >>$DOTFILES/platforms/$os.zsh
+    dotfiles install || fail "exit $?"
+    assert_eq "$(readlink ~/.config/aerospace/aerospace.toml)" $DOTFILES/aerospace/aerospace.toml
+}
