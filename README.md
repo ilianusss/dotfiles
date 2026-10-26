@@ -42,6 +42,13 @@ and kept up to date on every machine, macOS and Linux.
    AeroSpace (keys at the top of `aerospace/aerospace.toml`), and option-fn switches the layout
    (fn alone does nothing).
 
+5. macOS: in Shortcuts, make the two shortcuts behind the moon in the bar, then run each once and
+   allow it to access Focus:
+   - "Toggle Do Not Disturb", one action: Set Focus, Toggle Do Not Disturb. A click on the moon
+     runs it.
+   - "Get Current Focus" (the name Shortcuts gives it), one action: Get Current Focus. The bar runs
+     it every 10 s to light the moon.
+
 ## Commands
 
 `dotfiles install`, `dotfiles update` and `dotfiles status` are described in

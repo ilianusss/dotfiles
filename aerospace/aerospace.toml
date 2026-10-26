@@ -34,6 +34,9 @@ exec-on-workspace-change = ['/bin/bash', '-c',
     'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
 ]
 
+# Closes the bar's Apple menu when another window is focused (sketchybar/sketchybarrc)
+on-focus-changed = ['exec-and-forget sketchybar --trigger aerospace_focus_change']
+
 enable-normalization-flatten-containers = true
 enable-normalization-opposite-orientation-for-nested-containers = true
 
