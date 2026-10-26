@@ -11,7 +11,7 @@ render() {
         print "BAR=$(argb $base00)"
         print "TEXT=$(argb $base05)"
         print "DIM=$(argb $base04)"
-        print "ACCENT=$(argb $base0D)"
+        print "ACCENT=$(argb $base0E)"
         print "ON_ACCENT=$(argb $base00)"
         print "WARN=$(argb $base08)"
         [[ -n ${nerd_font_family-} ]] && print "FONT=${(qq)nerd_font_family}"
