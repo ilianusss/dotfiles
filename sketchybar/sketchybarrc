@@ -1,0 +1,58 @@
+#!/usr/bin/env zsh
+# SketchyBar: the AeroSpace workspaces and the front app on the left, volume, battery and the clock
+# on the right. Started by AeroSpace (aerospace.toml). Colors and font family come from ~/.theme
+# (the theme command), which reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
+
+emulate -L zsh
+
+BAR=0xff1e1e1e TEXT=0xffd4d4d4 DIM=0xff8a8a8a ACCENT=0xff6a9fb5 ON_ACCENT=0xff1e1e1e WARN=0xffc4746e
+FONT=Menlo
+[[ -r ~/.theme/generated/sketchybar ]] && source ~/.theme/generated/sketchybar
+
+PLUGINS=$CONFIG_DIR/plugins
+
+# The bar takes the place of the macOS menu bar, set to hide automatically (see the README)
+sketchybar --bar position=top height=32 color=$BAR shadow=off sticky=on padding_left=8 padding_right=8
+
+sketchybar --default \
+    icon.font="$FONT:Regular:15.0" icon.color=$ACCENT \
+    label.font="$FONT:Regular:13.0" label.color=$TEXT \
+    padding_left=4 padding_right=4 \
+    icon.padding_left=4 icon.padding_right=4 label.padding_left=4 label.padding_right=4
+
+# One item per workspace, all drawn by plugins/spaces.zsh: only the ones in use, on their display
+sketchybar --add event aerospace_workspace_change
+for sid in $(aerospace list-workspaces --all); do
+    sketchybar --add item space.$sid left \
+        --set space.$sid drawing=off icon.drawing=off label=$sid \
+            label.color=$DIM label.highlight_color=$ON_ACCENT label.padding_left=8 label.padding_right=8 \
+            background.color=$ACCENT background.corner_radius=5 background.height=22 background.drawing=off \
+            click_script="aerospace workspace $sid"
+done
+sketchybar --add item spaces left \
+    --set spaces drawing=off updates=on script=$PLUGINS/spaces.zsh \
+    --subscribe spaces aerospace_workspace_change front_app_switched display_change system_woke
+
+sketchybar --add item front_app left \
+    --set front_app icon.drawing=off label.padding_left=12 script='sketchybar --set $NAME label="$INFO"' \
+    --subscribe front_app front_app_switched
+
+# Right items are placed from the right edge inwards
+sketchybar --add item clock right \
+    --set clock icon=$'' update_freq=30 script=$PLUGINS/clock.zsh \
+    --subscribe clock system_woke
+
+sketchybar --add item battery right \
+    --set battery icon.highlight_color=$WARN update_freq=120 script=$PLUGINS/battery.zsh \
+    --subscribe battery power_source_change system_woke
+
+sketchybar --add item volume right \
+    --set volume script=$PLUGINS/volume.zsh \
+    --subscribe volume volume_change
+
+# macOS 27: a click between two items raises the bar above them and they vanish. A transparent
+# bracket over every item takes that click instead: https://github.com/FelixKratz/SketchyBar/issues/850
+sketchybar --add bracket click_shield '/.*/' \
+    --set click_shield background.drawing=on background.color=0x00000000
+
+sketchybar --update

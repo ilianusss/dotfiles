@@ -1,5 +1,11 @@
 # macOS: `dotfiles update` every 15 minutes and at login as a launchd agent, notifications from
-# osascript.
+# osascript, and the window manager's configs.
+
+LINKS+=(
+    aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml
+    sketchybar               ~/.config/sketchybar
+    borders/bordersrc        ~/.config/borders/bordersrc
+)
 
 LABEL=com.github.ilianusss.dotfiles
 PLIST=~/Library/LaunchAgents/$LABEL.plist
