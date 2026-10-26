@@ -1,3 +1,5 @@
 # Menlo — ships with macOS. Ghostty adds Nerd Font icons as a fallback.
 font_family="Menlo"
 font_size=13
+# SketchyBar: Meslo LG is Menlo with Nerd Font icons, brew install --cask font-meslo-lg-nerd-font
+nerd_font_family="MesloLGS Nerd Font"

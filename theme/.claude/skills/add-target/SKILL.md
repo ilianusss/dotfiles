@@ -1,6 +1,6 @@
 ---
 name: add-target
-description: How to make another tool follow ~/.theme (colors and/or font) — deciding whether it needs anything at all (ANSI colors), writing targets/<tool>.zsh with render() and reload() from the skeleton, pointing the tool's config at generated/<tool>, live reload, and checking it. Use when asked to theme, sync or hook up a new app (tmux, kitty, fzf, bat, lazygit, yazi, btop...) with the theme command. (Claude Code is done: its skin plugin reads ~/.theme itself.)
+description: How to make another tool follow ~/.theme (colors and/or font): deciding whether it needs anything at all (ANSI colors), writing targets/<tool>.zsh with render() and reload() from the skeleton, pointing the tool's config at generated/<tool>, live reload, and checking it. Use when asked to theme, sync or hook up a new app (tmux, kitty, fzf, bat, lazygit, yazi, btop...) with the theme command. (Done: Claude Code, SketchyBar, JankyBorders.)
 ---
 
 # Adding a target (a tool that follows the theme)
@@ -66,7 +66,13 @@ Add the include to the tool's own config with a comment pointing here, e.g.
 one, so the config still loads on a machine without `~/.theme`.
 
 If that config isn't in `~/.dotfiles` yet, move it to `~/.dotfiles/<tool>/` and add it to `LINKS`
-in `~/.dotfiles/bin/dotfiles`, then run `dotfiles install`: every machine gets the include.
+in `~/.dotfiles/bin/dotfiles`, then run `dotfiles install`: every machine gets the include. A tool
+of one OS only goes in `LINKS+=(...)` of `~/.dotfiles/platforms/<os>.zsh` instead (SketchyBar,
+JankyBorders: `platforms/darwin.zsh`). Its target still runs everywhere, so `render()` writes its
+file on every OS and `reload()` returns 0 where the tool isn't installed.
+
+A tool that draws text outside the terminal takes `nerd_font_family` (always set when a font is
+selected), not `font_family`: see `targets/sketchybar.zsh`.
 
 ## 5. Check and document
 
