@@ -3,6 +3,7 @@
 
 LINKS+=(
     aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml
+    aerospace/new-app.zsh    ~/.config/aerospace/new-app.zsh
     sketchybar               ~/.config/sketchybar
     borders/bordersrc        ~/.config/borders/bordersrc
     karabiner                ~/.config/karabiner

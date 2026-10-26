@@ -52,13 +52,15 @@ persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 
 key-mapping.preset = 'qwerty'
 
-# The top gap leaves room for the bar: its height (32, sketchybar/sketchybarrc) + 8
-gaps.inner.horizontal = 8
-gaps.inner.vertical =   8
-gaps.outer.left =       8
-gaps.outer.bottom =     8
-gaps.outer.top =        40
-gaps.outer.right =      8
+# 10 px around the windows. The top gap also leaves room for the bar: its height (32,
+# sketchybar/sketchybarrc) + 10. A notched display already keeps that height free, even with the
+# menu bar hidden: 10 there.
+gaps.inner.horizontal = 13
+gaps.inner.vertical =   13
+gaps.outer.left =       10
+gaps.outer.bottom =     10
+gaps.outer.top =        [{ monitor.'built-in' = 10 }, 42]
+gaps.outer.right =      10
 
 # Ghostty tabs are macOS native tabs, which AeroSpace sees as windows of their own: without this
 # rule a new tab lands in another workspace. https://ghostty.org/docs/help/macos-tiling-wms
@@ -76,8 +78,13 @@ gaps.outer.right =      8
 
 [[on-window-detected]]
     if.app-id = 'com.apple.finder'
-    if.window-title-regex-substring = ' Info$'
     run = 'layout floating'
+
+# An app that starts opens in the first empty workspace (new-app.zsh). Last, so the windows above
+# stay where they open: Ghostty from ctrl-alt-enter, the floating ones.
+[[on-window-detected]]
+    if.during-aerospace-startup = false
+    run = 'exec-and-forget ~/.config/aerospace/new-app.zsh'
 
 [mode.main.binding]
     ctrl-alt-h = 'focus left'
