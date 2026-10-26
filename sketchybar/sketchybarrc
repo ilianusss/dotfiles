@@ -1,11 +1,12 @@
 #!/usr/bin/env zsh
-# SketchyBar: the AeroSpace workspaces and the front app on the left, volume, battery and the clock
-# on the right. Started by AeroSpace (aerospace.toml). Colors and font family come from ~/.theme
-# (the theme command), which reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
+# SketchyBar: the AeroSpace workspaces and the front app on the left; on the right, from the edge:
+# the Apple menu, clock, date, battery, Wi-Fi, Bluetooth, Do Not Disturb and volume. Started by
+# AeroSpace (aerospace.toml). Colors and font family come from ~/.theme (the theme command), which
+# reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
 
 emulate -L zsh
 
-BAR=0xff1e1e1e TEXT=0xffd4d4d4 DIM=0xff8a8a8a ACCENT=0xff6a9fb5 ON_ACCENT=0xff1e1e1e WARN=0xffc4746e
+BAR=0xff1e1e1e TEXT=0xffd4d4d4 DIM=0xff8a8a8a ACCENT=0xffd3869b ON_ACCENT=0xff1e1e1e WARN=0xffc4746e
 FONT=Menlo
 [[ -r ~/.theme/generated/sketchybar ]] && source ~/.theme/generated/sketchybar
 
@@ -37,22 +38,90 @@ sketchybar --add item front_app left \
     --set front_app icon.drawing=off label.padding_left=12 script='sketchybar --set $NAME label="$INFO"' \
     --subscribe front_app front_app_switched
 
-# Right items are placed from the right edge inwards
+# Right items are placed from the right edge inwards. A click opens the app or the settings behind them.
+
+# The Apple menu, rebuilt: a click opens its entries below it (added at the end). Leaving the bar
+# closes them, and since a fast move can leave it unseen, so does focusing another window or
+# workspace (aerospace_focus_change comes from aerospace.toml)
+sketchybar --add event aerospace_focus_change
+sketchybar --add item apple right \
+    --set apple icon=$'' label.drawing=off \
+        click_script='sketchybar --set $NAME popup.drawing=toggle' \
+        script='sketchybar --set $NAME popup.drawing=off' \
+        popup.align=right popup.background.color=$BAR popup.background.corner_radius=5 \
+        popup.background.border_color=$DIM popup.background.border_width=1 \
+    --subscribe apple mouse.exited.global front_app_switched aerospace_focus_change aerospace_workspace_change
+
 sketchybar --add item clock right \
-    --set clock icon=$'' update_freq=30 script=$PLUGINS/clock.zsh \
+    --set clock icon=$'' update_freq=30 script='sketchybar --set $NAME label="$(date +%H:%M)"' \
+        click_script='open -a Calendar' \
     --subscribe clock system_woke
+
+sketchybar --add item date right \
+    --set date icon=$'' update_freq=60 script='sketchybar --set $NAME label="$(date "+%a %d %b")"' \
+        click_script='open -a Calendar' \
+    --subscribe date system_woke
 
 sketchybar --add item battery right \
     --set battery icon.highlight_color=$WARN update_freq=120 script=$PLUGINS/battery.zsh \
+        click_script='open x-apple.systempreferences:com.apple.Battery-Settings.extension' \
     --subscribe battery power_source_change system_woke
+
+sketchybar --add item wifi right \
+    --set wifi label.drawing=off icon.highlight_color=$DIM update_freq=30 script=$PLUGINS/wifi.zsh \
+        click_script='open x-apple.systempreferences:com.apple.wifi-settings-extension' \
+    --subscribe wifi wifi_change system_woke
+
+sketchybar --add item bluetooth right \
+    --set bluetooth label.drawing=off icon.highlight_color=$DIM update_freq=30 script=$PLUGINS/bluetooth.zsh \
+        click_script='open x-apple.systempreferences:com.apple.BluetoothSettings' \
+    --subscribe bluetooth system_woke
+
+# macOS has no command to toggle Do Not Disturb: the click runs a shortcut made once by hand (README).
+# Polled, since turning it on in Control Center sends no event.
+sketchybar --add item focus right \
+    --set focus icon=$'󰽥' label.drawing=off icon.highlight_color=$DIM update_freq=10 script=$PLUGINS/focus.zsh \
+        click_script="shortcuts run 'Toggle Do Not Disturb'; sleep 1; $PLUGINS/focus.zsh" \
+    --subscribe focus system_woke
 
 sketchybar --add item volume right \
     --set volume script=$PLUGINS/volume.zsh \
+        click_script='open x-apple.systempreferences:com.apple.Sound-Settings.extension' \
     --subscribe volume volume_change
 
 # macOS 27: a click between two items raises the bar above them and they vanish. A transparent
 # bracket over every item takes that click instead: https://github.com/FelixKratz/SketchyBar/issues/850
 sketchybar --add bracket click_shield '/.*/' \
     --set click_shield background.drawing=on background.color=0x00000000
+
+# The Apple menu entries, after the shield so it stays on the bar. None asks for a permission:
+# Force Quit opens Activity Monitor, Lock Screen calls what ctrl-cmd-Q calls, and Restart, Shut Down
+# and Log Out ask for confirmation, as the real menu does. Each entry: its name, the macOS shortcut
+# that does the same (shown small, or ''), its command. The name is the icon so the shortcut can be
+# smaller, and both have a fixed width so every entry is as wide as the menu when hovered.
+typeset -a menu=(
+    'About This Mac'   ''         "open '/System/Library/CoreServices/Applications/About This Mac.app'"
+    'System Settings'  ''         "open -a 'System Settings'"
+    'App Store'        ''         "open -a 'App Store'"
+    'Force Quit'       '(⌥⌘⎋)'    "open -a 'Activity Monitor'"
+    'Sleep'            ''         "pmset sleepnow"
+    'Restart'          ''         "osascript -e 'tell application \"loginwindow\" to «event aevtrrst»'"
+    'Shut Down'        ''         "osascript -e 'tell application \"loginwindow\" to «event aevtrsdn»'"
+    'Lock Screen'      '(⌃⌘Q)'    "/usr/bin/python3 -c 'import ctypes; ctypes.CDLL(\"/System/Library/PrivateFrameworks/login.framework/Versions/Current/login\").SACLockScreenImmediate()'"
+    'Log Out'          '(⇧⌘Q)'    "osascript -e 'tell application \"loginwindow\" to «event aevtrlgo»'"
+)
+n=0
+for name keys cmd in "${menu[@]}"; do
+    sketchybar --add item apple.$((++n)) popup.apple \
+        --set apple.$n icon="$name" label="$keys" \
+            icon.font="$FONT:Regular:13.0" icon.color=$TEXT icon.width=130 icon.padding_left=12 \
+            label.font="$FONT:Regular:11.0" label.color=$DIM label.width=50 label.align=right \
+            label.padding_right=12 icon.highlight_color=$ON_ACCENT label.highlight_color=$ON_ACCENT \
+            background.color=$ACCENT background.corner_radius=4 background.height=24 background.drawing=off \
+            script='[ "$SENDER" = mouse.entered ] && s=on || s=off
+                    sketchybar --set $NAME background.drawing=$s icon.highlight=$s label.highlight=$s' \
+            click_script="sketchybar --set apple popup.drawing=off; $cmd" \
+        --subscribe apple.$n mouse.entered mouse.exited
+done
 
 sketchybar --update
