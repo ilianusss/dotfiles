@@ -59,7 +59,8 @@ and kept up to date on every machine, macOS and Linux.
 ## Commands
 
 `dotfiles install`, `dotfiles update` and `dotfiles status` are described in
-[AGENTS.md](AGENTS.md#commands-bindotfiles-on-path-via-zshzshrc).
+[AGENTS.md](AGENTS.md#commands-bindotfiles-on-path-via-zshzshrc). After merging a pull request,
+`make` in the repo goes back to main and runs `dotfiles update`.
 
 macOS: `space` restarts the window manager (AeroSpace, the bar and the borders), and the bar hides
 the menu bar again; `space off` stops it and shows the menu bar, as does the button left of the
