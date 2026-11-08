@@ -6,6 +6,7 @@ ZEN_HOME=~/'Library/Application Support/Zen'
 LINKS+=(
     aerospace/aerospace.toml ~/.config/aerospace/aerospace.toml
     aerospace/new-app.zsh    ~/.config/aerospace/new-app.zsh
+    aerospace/workspace.zsh  ~/.config/aerospace/workspace.zsh
     sketchybar               ~/.config/sketchybar
     borders/bordersrc        ~/.config/borders/bordersrc
     karabiner                ~/.config/karabiner

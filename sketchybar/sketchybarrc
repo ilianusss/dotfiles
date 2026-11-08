@@ -25,11 +25,12 @@ sketchybar --default \
     padding_left=4 padding_right=4 \
     icon.padding_left=4 icon.padding_right=4 label.padding_left=4 label.padding_right=4
 
-# One item per workspace, all drawn by plugins/spaces.zsh: only the ones in use, on their display
+# One item per workspace, all drawn by plugins/spaces.zsh: only the ones in use, on their display,
+# labelled with their number on that display
 sketchybar --add event aerospace_workspace_change
 for sid in $(aerospace list-workspaces --all); do
     sketchybar --add item space.$sid left \
-        --set space.$sid drawing=off icon.drawing=off label=$sid \
+        --set space.$sid drawing=off icon.drawing=off \
             label.color=$DIM label.highlight_color=$ON_ACCENT label.padding_left=8 label.padding_right=8 \
             background.color=$ACCENT background.corner_radius=5 background.height=22 background.drawing=off \
             click_script="aerospace workspace $sid"
@@ -37,6 +38,11 @@ done
 sketchybar --add item spaces left \
     --set spaces drawing=off updates=on script=$PLUGINS/spaces.zsh \
     --subscribe spaces aerospace_workspace_change front_app_switched display_change system_woke
+
+# The windows of a display gone for a while move to the displays left (aerospace/workspace.zsh)
+sketchybar --add item reconcile left \
+    --set reconcile drawing=off updates=on script='~/.config/aerospace/workspace.zsh reconcile &' \
+    --subscribe reconcile display_change system_woke
 
 sketchybar --add item front_app left \
     --set front_app icon.drawing=off label.padding_left=12 script='sketchybar --set $NAME label="$INFO"' \
