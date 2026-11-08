@@ -1,0 +1,4 @@
+#!/usr/bin/env zsh
+# font: pick the font of every themed tool, same as `theme font [<name>]`.
+
+exec ${0:A:h}/theme font "$@"

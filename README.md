@@ -15,7 +15,7 @@ and kept up to date on every machine, macOS and Linux.
 
   ```sh
   brew install --cask nikitabobko/tap/aerospace karabiner-elements
-  brew install --cask font-jetbrains-mono-nerd-font font-meslo-lg-nerd-font
+  brew install --cask font-jetbrains-mono-nerd-font font-meslo-lg-nerd-font font-poppins
   brew install FelixKratz/formulae/sketchybar FelixKratz/formulae/borders
   ```
 

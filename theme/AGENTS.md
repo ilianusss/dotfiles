@@ -10,7 +10,7 @@ It lives in `~/.dotfiles/theme`; `~/.theme` is a link to it, made by `dotfiles i
 ```sh
 theme                            # pick a palette: fzf, live preview everywhere, Enter keep, Esc revert
 theme colors [<name>]            # pick / set the palette
-theme font [<name>]              # pick / set the font
+theme font [<name>]              # pick / set the font (`font [<name>]` is the same)
 theme apply                      # re-render every target (after editing a palette or a target)
 theme import <url|file> <name>   # palette from a tinted-theming base16/base24 YAML scheme
 theme list [colors|font]         # * = selected
@@ -21,10 +21,11 @@ theme current
 
 ```
 bin/theme                  the command
+bin/font                   shortcut for `theme font`
 colors/<name>/palette      a color palette (format below). Skill: add-palette
 fonts/<name>/font          a font (format below). Skill: add-font
 targets/<tool>.zsh         how one tool is themed: render() + reload(). Skill: add-target
-completions/_theme         zsh completion (on fpath via ~/.zshrc)
+completions/_theme, _font  zsh completion (on fpath via ~/.zshrc)
 current/colors -> ../colors/<name>   the selection (symlinks, gitignored)
 current/font   -> ../fonts/<name>
 generated/                 files written by targets + `stamp`; NEVER edit (gitignored)
