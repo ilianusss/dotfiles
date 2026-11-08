@@ -2,3 +2,7 @@
 config-file = ?~/.theme/generated/ghostty
 # `theme` reloads Ghostty on every switch (and while previewing): no toast each time
 app-notifications = no-config-reload
+# 1 is opaque, 0 is fully transparent: try values between 0.8 and 0.95
+background-opacity = 0.95
+# macOS only: blurs what is behind the window so the text stays readable
+background-blur = 20
