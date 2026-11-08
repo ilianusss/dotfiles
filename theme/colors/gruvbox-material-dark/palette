@@ -6,6 +6,7 @@ variant=dark
 
 # Claude Code (skin plugin): start from its built-in skin, not from base16
 claude_skin=gruvbox
+claude_user="#d3869b"
 
 # base16 — https://github.com/tinted-theming/home/blob/main/styling.md
 base00="#282828"
