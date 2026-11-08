@@ -10,6 +10,7 @@ On macOS it adds the window manager: AeroSpace, SketchyBar, JankyBorders and Kar
 dotfiles install   # clone what is missing, link the files, apply the theme, schedule `update`
 dotfiles update    # fast-forward every repo to its upstream; local work is never touched
 dotfiles status    # uncommitted or unpushed work per repo, and files that are not linked
+make               # in the repo: git checkout main, then dotfiles update (after a merged PR)
 ```
 
 `install` is safe to rerun: it skips what is in place and moves a file in the way to
@@ -21,6 +22,7 @@ changes, so a file or repo added here reaches every machine.
 ```
 bin/dotfiles          the command; LINKS, REPOS and ZSH_DEPS at its top
 bin/space             macOS: `space` restarts the window manager, `space off` stops it
+Makefile              `make` (= `make main`): back to main, then `dotfiles update`
 platforms/<os>.zsh    schedule() and notify() for one OS: darwin (launchd), linux (systemd timer),
                       and the LINKS only that OS needs
 zsh/zshrc             -> ~/.zshrc; machine-only lines go in the untracked ~/.zshrc.local
