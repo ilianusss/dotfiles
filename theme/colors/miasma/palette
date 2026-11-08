@@ -27,6 +27,9 @@ base0D="#78824b"   # olive (functions)
 base0E="#bb7744"   # accent
 base0F="#685742"   # brown
 
+# Zen Browser: window background (default: base0E mixed 20% into base00)
+zen_color="#403026"
+
 # terminal
 background="#222222"
 foreground="#c2c2b0"

@@ -70,3 +70,45 @@ test_install_links_the_files_the_platform_adds() {
     dotfiles install || fail "exit $?"
     assert_eq "$(readlink ~/.config/aerospace/aerospace.toml)" $DOTFILES/aerospace/aerospace.toml
 }
+
+# A Zen home with two profiles; the platform points ZEN_HOME at it
+zen_home() {
+    local os=${(L)$(uname -s)}
+    print -r -- 'ZEN_HOME=$HOME/zen' >>$DOTFILES/platforms/$os.zsh
+    mkdir -p ~/zen/Profiles/aaa.Release ~/zen/Profiles/bbb.Default
+}
+
+test_install_links_the_theme_and_prefs_into_the_zen_profile_of_this_install() {
+    zen_home
+    print -r -- '[Install1234]
+Default=Profiles/aaa.Release
+Locked=1' >~/zen/installs.ini
+    dotfiles install || fail "exit $?"
+    assert_eq "$(readlink ~/zen/Profiles/aaa.Release/user.js)" $DOTFILES/zen/user.js
+    assert_eq "$(readlink ~/zen/Profiles/aaa.Release/chrome/userChrome.css)" $DOTFILES/theme/generated/zen.css
+    assert_eq "$(print -l ~/zen/Profiles/bbb.Default/*(DN))" ""
+}
+
+test_install_uses_the_default_profile_of_profiles_ini_without_installs_ini() {
+    zen_home
+    print -r -- '[Profile0]
+Name=Release
+IsRelative=1
+Path=Profiles/aaa.Release
+
+[Profile1]
+Name=Default
+IsRelative=1
+Path=Profiles/bbb.Default
+Default=1' >~/zen/profiles.ini
+    dotfiles install || fail "exit $?"
+    assert_eq "$(readlink ~/zen/Profiles/bbb.Default/user.js)" $DOTFILES/zen/user.js
+    assert_eq "$(print -l ~/zen/Profiles/aaa.Release/*(DN))" ""
+}
+
+test_install_links_nothing_for_zen_when_it_has_no_profile() {
+    local os=${(L)$(uname -s)}
+    print -r -- 'ZEN_HOME=$HOME/zen' >>$DOTFILES/platforms/$os.zsh
+    dotfiles install || fail "exit $?"
+    assert_eq "$(dotfiles status | grep -c zen)" 0
+}

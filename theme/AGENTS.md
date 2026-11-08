@@ -48,6 +48,7 @@ value, no shell expansion.
 | `selection_bg` `selection_fg` | no | base02, foreground |
 | `color0`..`color15` | no | ANSI terminal colors; default = base16 mapping (0=00 1=08 2=0B 3=0A 4=0D 5=0E 6=0C 7=05 8=03 9-14=1-6 15=07) |
 | `nvim_colorscheme` | no | Neovim uses this colorscheme instead of generating one from base16 with mini.base16 |
+| `zen_color` | no | Zen Browser: the window background, `"#rrggbb"`; default `base0E` mixed 20% into `base00` |
 | `claude_skin` | no | Claude Code skin: start from this built-in skin of the plugin (`kanagawa`, `gruvbox`, `homebrew`...: its colors and spinner words) instead of deriving it from base16 |
 | `claude_<slot>` | no | Claude Code skin: one slot's color, `"#rrggbb"`. Slots: `user fg muted surface zebra ok err warn read write run search web mcp other`; derivation table in the add-palette skill |
 
@@ -79,6 +80,7 @@ draws no icons. Only the family follows the theme there: each tool keeps its own
 | SketchyBar (macOS) | `generated/sketchybar`, sourced by `~/.dotfiles/sketchybar/sketchybarrc`. Bar `base00`, text `base05`, other workspaces `base04`, accent (icons, focused workspace) `base0E` with `base00` on it, warning (low battery) `base08`, font `nerd_font_family` | `targets/sketchybar.zsh` runs `sketchybar --reload` |
 | JankyBorders (macOS) | `generated/borders`, sourced by `~/.dotfiles/borders/bordersrc`. Focused window `base0E` (the SketchyBar accent), the others `base02` | `targets/borders.zsh` reruns `borders` with the new colors, which updates the running one |
 | superfile | `generated/superfile.toml`, linked as `theme.toml` into its theme folder by `LINKS`; its `config.toml` (`~/.dotfiles/superfile`) selects it with `theme = 'theme'`. Panel borders and selection `base0E`/`base02`, text `base05`, font from the terminal | none: read at start, so a running superfile keeps its colors until restarted |
+| Zen Browser | `generated/zen.css`, linked as `chrome/userChrome.css` into the profile `installs.ini` names (`link_zen` in `bin/dotfiles`; `zen/user.js` turns on userChrome). Window background `zen_color`, accent `base0E` | none: Zen reads `userChrome.css` at start only, so restart Zen |
 | Claude Code ([skin plugin](https://github.com/ilianusss/claude-skin), `.theme` mode: `"env": {"SKIN_THEME_HOME": "~/.theme"}` in `settings.json` of `~/.claude` and `~/.claude-team`) | every `colors/*/palette` (one skin each) and `current/colors`; no target | polls `generated/stamp` (2 s). The other way too: `/skin <palette>` runs `bin/theme colors <palette>` |
 
 ## Adding a target (a new tool)
