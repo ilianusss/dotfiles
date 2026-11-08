@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 # SketchyBar: the AeroSpace workspaces and the front app on the left; on the right, from the edge:
-# the Apple menu, clock, date, battery, Wi-Fi, Bluetooth, Do Not Disturb and volume. Started by
+# the Apple menu, clock, date, battery, Wi-Fi, Bluetooth, coffee or tisane, volume, memory and CPU. Started by
 # AeroSpace (aerospace.toml). Colors and font family come from ~/.theme (the theme command), which
 # reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
 
@@ -77,17 +77,27 @@ sketchybar --add item bluetooth right \
         click_script='open x-apple.systempreferences:com.apple.BluetoothSettings' \
     --subscribe bluetooth system_woke
 
-# macOS has no command to toggle Do Not Disturb: the click runs a shortcut made once by hand (README).
-# Polled, since turning it on in Control Center sends no event.
-sketchybar --add item focus right \
-    --set focus icon=$'󰽥' label.drawing=off icon.highlight_color=$DIM update_freq=10 script=$PLUGINS/focus.zsh \
-        click_script="shortcuts run 'Toggle Do Not Disturb'; sleep 1; $PLUGINS/focus.zsh" \
-    --subscribe focus system_woke
+# Polled, since the coffee and tisane aliases of zsh/zshrc send no event
+sketchybar --add item coffee right \
+    --set coffee label.drawing=off icon.highlight_color=$DIM update_freq=30 script=$PLUGINS/coffee.zsh \
+        click_script="$PLUGINS/coffee.zsh toggle" \
+    --subscribe coffee system_woke
 
 sketchybar --add item volume right \
     --set volume script=$PLUGINS/volume.zsh \
         click_script='open x-apple.systempreferences:com.apple.Sound-Settings.extension' \
     --subscribe volume volume_change
+
+# A click opens Activity Monitor on the CPU or Memory tab
+sketchybar --add item ram right \
+    --set ram icon=$'󰍛' update_freq=10 script=$PLUGINS/ram.zsh \
+        click_script="$PLUGINS/activity.zsh Memory" \
+    --subscribe ram system_woke
+
+sketchybar --add item cpu right \
+    --set cpu icon=$'󰘚' update_freq=5 script=$PLUGINS/cpu.zsh \
+        click_script="$PLUGINS/activity.zsh CPU" \
+    --subscribe cpu system_woke
 
 # macOS 27: a click between two items raises the bar above them and they vanish. A transparent
 # bracket over every item takes that click instead: https://github.com/FelixKratz/SketchyBar/issues/850
