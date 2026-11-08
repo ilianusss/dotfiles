@@ -7,10 +7,12 @@
 #
 #   ctrl-alt-h/j/k/l or arrows        focus left/down/up/right
 #   ctrl-alt-shift-h/j/k/l or arrows  move the window left/down/up/right
-#   ctrl-alt-1..9                     go to workspace 1..9
-#   ctrl-alt-shift-1..9               send the window to workspace 1..9 (you stay where you are)
+#   ctrl-alt-1..9                     go to workspace 1..9 of the focused display
+#   ctrl-alt-shift-1..9               send the window to workspace 1..9 of the focused display (you
+#                                     stay where you are)
 #   ctrl-alt-tab                      back to the previous workspace
-#   ctrl-alt-shift-tab                send the workspace to the next display
+#   ctrl-alt-shift-tab                send the window to the next display, and follow it: then
+#                                     ctrl-alt-shift-1..9 picks its workspace there
 #   ctrl-alt-t                        tiles (again: horizontal <-> vertical)
 #   ctrl-alt-s                        accordion, a stack (again: horizontal <-> vertical)
 #   ctrl-alt-shift-space              floating <-> tiled
@@ -47,8 +49,15 @@ default-root-container-orientation = 'auto'
 on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
 automatically-unhide-macos-hidden-apps = false
 
-# Kept even when empty, so the bar always knows them; it only shows the ones in use
-persistent-workspaces = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+# Every display has its own workspaces 1 to 9, named <set>-<n>: set 1 on the main display, 2 on the
+# other, 3 on the built-in one when there are three (force assignment at the end). The keys pick
+# the set of the focused display (workspace.zsh). Kept even when empty, so the bar always knows
+# them; it only shows the ones in use.
+persistent-workspaces = [
+    '1-1', '1-2', '1-3', '1-4', '1-5', '1-6', '1-7', '1-8', '1-9',
+    '2-1', '2-2', '2-3', '2-4', '2-5', '2-6', '2-7', '2-8', '2-9',
+    '3-1', '3-2', '3-3', '3-4', '3-5', '3-6', '3-7', '3-8', '3-9',
+]
 
 key-mapping.preset = 'qwerty'
 
@@ -105,29 +114,28 @@ gaps.outer.right =      10
     ctrl-alt-shift-up = 'move up'
     ctrl-alt-shift-right = 'move right'
 
-    ctrl-alt-1 = 'workspace 1'
-    ctrl-alt-2 = 'workspace 2'
-    ctrl-alt-3 = 'workspace 3'
-    ctrl-alt-4 = 'workspace 4'
-    ctrl-alt-5 = 'workspace 5'
-    ctrl-alt-6 = 'workspace 6'
-    ctrl-alt-7 = 'workspace 7'
-    ctrl-alt-8 = 'workspace 8'
-    ctrl-alt-9 = 'workspace 9'
+    ctrl-alt-1 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 1'
+    ctrl-alt-2 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 2'
+    ctrl-alt-3 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 3'
+    ctrl-alt-4 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 4'
+    ctrl-alt-5 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 5'
+    ctrl-alt-6 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 6'
+    ctrl-alt-7 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 7'
+    ctrl-alt-8 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 8'
+    ctrl-alt-9 = 'exec-and-forget ~/.config/aerospace/workspace.zsh focus 9'
 
-    # The focused workspace doesn't change, so exec-on-workspace-change doesn't run: tell the bar
-    ctrl-alt-shift-1 = ['move-node-to-workspace 1', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-2 = ['move-node-to-workspace 2', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-3 = ['move-node-to-workspace 3', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-4 = ['move-node-to-workspace 4', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-5 = ['move-node-to-workspace 5', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-6 = ['move-node-to-workspace 6', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-7 = ['move-node-to-workspace 7', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-8 = ['move-node-to-workspace 8', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
-    ctrl-alt-shift-9 = ['move-node-to-workspace 9', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-1 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 1'
+    ctrl-alt-shift-2 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 2'
+    ctrl-alt-shift-3 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 3'
+    ctrl-alt-shift-4 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 4'
+    ctrl-alt-shift-5 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 5'
+    ctrl-alt-shift-6 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 6'
+    ctrl-alt-shift-7 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 7'
+    ctrl-alt-shift-8 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 8'
+    ctrl-alt-shift-9 = 'exec-and-forget ~/.config/aerospace/workspace.zsh send 9'
 
     ctrl-alt-tab = 'workspace-back-and-forth'
-    ctrl-alt-shift-tab = ['move-workspace-to-monitor --wrap-around next', 'exec-and-forget sketchybar --trigger aerospace_workspace_change']
+    ctrl-alt-shift-tab = 'move-node-to-monitor --focus-follows-window --wrap-around next'
 
     ctrl-alt-t = 'layout tiles horizontal vertical'
     ctrl-alt-s = 'layout accordion horizontal vertical'
@@ -153,3 +161,37 @@ gaps.outer.right =      10
     ctrl-alt-shift-j = ['join-with down', 'mode main']
     ctrl-alt-shift-k = ['join-with up', 'mode main']
     ctrl-alt-shift-l = ['join-with right', 'mode main']
+
+# Each set on its display, by role, as read_sets in workspace.zsh: 'main' is the main display of
+# System Settings > Displays, 'secondary' the other one when there are two. With three, set 2 goes
+# to the first display from the left not named built-in, and set 3 to the built-in one. A set whose
+# display is gone is parked on the main display; workspace.zsh reconcile moves its windows to empty
+# workspaces, and back if the display returns within a grace period.
+[workspace-to-monitor-force-assignment]
+    1-1 = 'main'
+    1-2 = 'main'
+    1-3 = 'main'
+    1-4 = 'main'
+    1-5 = 'main'
+    1-6 = 'main'
+    1-7 = 'main'
+    1-8 = 'main'
+    1-9 = 'main'
+    2-1 = ['secondary', '^(?!built-in)']
+    2-2 = ['secondary', '^(?!built-in)']
+    2-3 = ['secondary', '^(?!built-in)']
+    2-4 = ['secondary', '^(?!built-in)']
+    2-5 = ['secondary', '^(?!built-in)']
+    2-6 = ['secondary', '^(?!built-in)']
+    2-7 = ['secondary', '^(?!built-in)']
+    2-8 = ['secondary', '^(?!built-in)']
+    2-9 = ['secondary', '^(?!built-in)']
+    3-1 = 'built-in'
+    3-2 = 'built-in'
+    3-3 = 'built-in'
+    3-4 = 'built-in'
+    3-5 = 'built-in'
+    3-6 = 'built-in'
+    3-7 = 'built-in'
+    3-8 = 'built-in'
+    3-9 = 'built-in'

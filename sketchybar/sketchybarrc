@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 # SketchyBar: the AeroSpace workspaces and the front app on the left; on the right, from the edge:
-# the Apple menu, clock, date, battery, Wi-Fi, Bluetooth, Do Not Disturb and volume. Started by
-# AeroSpace (aerospace.toml). Colors and font family come from ~/.theme (the theme command), which
-# reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
+# the Apple menu, the off button, clock, date, battery, Wi-Fi, Bluetooth, coffee or tisane, volume,
+# memory and CPU. Started by AeroSpace (aerospace.toml). Colors and font family come from ~/.theme
+# (the theme command), which reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
 
 emulate -L zsh
 
@@ -12,7 +12,11 @@ FONT=Menlo
 
 PLUGINS=$CONFIG_DIR/plugins
 
-# The bar takes the place of the macOS menu bar, set to hide automatically (see the README)
+# The bar takes the place of the macOS menu bar, set to hide automatically: on every start, since
+# `space off` shows it (bin/space). Through System Events, so the menu bar follows at once; the bar
+# runs under AeroSpace, which needs the Automation permission for it (README).
+osascript -e 'tell application "System Events" to set autohide menu bar of dock preferences to true' \
+    >/dev/null &!
 sketchybar --bar position=top height=32 color=$BAR shadow=off sticky=on padding_left=8 padding_right=8
 
 sketchybar --default \
@@ -21,11 +25,12 @@ sketchybar --default \
     padding_left=4 padding_right=4 \
     icon.padding_left=4 icon.padding_right=4 label.padding_left=4 label.padding_right=4
 
-# One item per workspace, all drawn by plugins/spaces.zsh: only the ones in use, on their display
+# One item per workspace, all drawn by plugins/spaces.zsh: only the ones in use, on their display,
+# labelled with their number on that display
 sketchybar --add event aerospace_workspace_change
 for sid in $(aerospace list-workspaces --all); do
     sketchybar --add item space.$sid left \
-        --set space.$sid drawing=off icon.drawing=off label=$sid \
+        --set space.$sid drawing=off icon.drawing=off \
             label.color=$DIM label.highlight_color=$ON_ACCENT label.padding_left=8 label.padding_right=8 \
             background.color=$ACCENT background.corner_radius=5 background.height=22 background.drawing=off \
             click_script="aerospace workspace $sid"
@@ -33,6 +38,11 @@ done
 sketchybar --add item spaces left \
     --set spaces drawing=off updates=on script=$PLUGINS/spaces.zsh \
     --subscribe spaces aerospace_workspace_change front_app_switched display_change system_woke
+
+# The windows of a display gone for a while move to the displays left (aerospace/workspace.zsh)
+sketchybar --add item reconcile left \
+    --set reconcile drawing=off updates=on script='~/.config/aerospace/workspace.zsh reconcile &' \
+    --subscribe reconcile display_change system_woke
 
 sketchybar --add item front_app left \
     --set front_app icon.drawing=off label.padding_left=12 script='sketchybar --set $NAME label="$INFO"' \
@@ -51,6 +61,11 @@ sketchybar --add item apple right \
         popup.align=right popup.background.color=$BAR popup.background.corner_radius=5 \
         popup.background.border_color=$DIM popup.background.border_width=1 \
     --subscribe apple mouse.exited.global front_app_switched aerospace_focus_change aerospace_workspace_change
+
+# Stops AeroSpace, the bar and the borders and shows the menu bar, for the plain macOS desktop;
+# `space` starts them again
+sketchybar --add item space_off right \
+    --set space_off icon=$'󰋂' label.drawing=off click_script="${CONFIG_DIR:A:h}/bin/space off"
 
 sketchybar --add item clock right \
     --set clock icon=$'' update_freq=30 script='sketchybar --set $NAME label="$(date +%H:%M)"' \
@@ -77,17 +92,27 @@ sketchybar --add item bluetooth right \
         click_script='open x-apple.systempreferences:com.apple.BluetoothSettings' \
     --subscribe bluetooth system_woke
 
-# macOS has no command to toggle Do Not Disturb: the click runs a shortcut made once by hand (README).
-# Polled, since turning it on in Control Center sends no event.
-sketchybar --add item focus right \
-    --set focus icon=$'󰽥' label.drawing=off icon.highlight_color=$DIM update_freq=10 script=$PLUGINS/focus.zsh \
-        click_script="shortcuts run 'Toggle Do Not Disturb'; sleep 1; $PLUGINS/focus.zsh" \
-    --subscribe focus system_woke
+# Polled, since the coffee and tisane aliases of zsh/zshrc send no event
+sketchybar --add item coffee right \
+    --set coffee label.drawing=off icon.highlight_color=$DIM update_freq=30 script=$PLUGINS/coffee.zsh \
+        click_script="$PLUGINS/coffee.zsh toggle" \
+    --subscribe coffee system_woke
 
 sketchybar --add item volume right \
     --set volume script=$PLUGINS/volume.zsh \
         click_script='open x-apple.systempreferences:com.apple.Sound-Settings.extension' \
     --subscribe volume volume_change
+
+# A click opens Activity Monitor on the CPU or Memory tab
+sketchybar --add item ram right \
+    --set ram icon=$'󰍛' update_freq=10 script=$PLUGINS/ram.zsh \
+        click_script="$PLUGINS/activity.zsh Memory" \
+    --subscribe ram system_woke
+
+sketchybar --add item cpu right \
+    --set cpu icon=$'󰘚' update_freq=5 script=$PLUGINS/cpu.zsh \
+        click_script="$PLUGINS/activity.zsh CPU" \
+    --subscribe cpu system_woke
 
 # macOS 27: a click between two items raises the bar above them and they vanish. A transparent
 # bracket over every item takes that click instead: https://github.com/FelixKratz/SketchyBar/issues/850

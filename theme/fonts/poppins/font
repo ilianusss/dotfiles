@@ -1,0 +1,3 @@
+# Poppins: brew install --cask font-poppins (no Nerd Font build exists)
+font_family="Poppins"
+font_size=13

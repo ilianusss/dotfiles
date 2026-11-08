@@ -15,7 +15,7 @@ and kept up to date on every machine, macOS and Linux.
 
   ```sh
   brew install --cask nikitabobko/tap/aerospace karabiner-elements
-  brew install --cask font-jetbrains-mono-nerd-font font-meslo-lg-nerd-font
+  brew install --cask font-jetbrains-mono-nerd-font font-meslo-lg-nerd-font font-poppins
   brew install FelixKratz/formulae/sketchybar FelixKratz/formulae/borders
   ```
 
@@ -35,6 +35,11 @@ and kept up to date on every machine, macOS and Linux.
    - Control Center > Automatically hide and show the menu bar: Always (the bar takes its place)
    - Desktop & Dock > Mission Control: turn on "Group windows by application" and turn off
      "Displays have separate Spaces" (then log out)
+   - Privacy & Security > Accessibility: allow SketchyBar, so a click on the CPU or memory
+     percentage can pick the tab of Activity Monitor
+   - Privacy & Security > Automation: allow AeroSpace and Ghostty to control System Events, so
+     the bar hides the menu bar when it starts (it runs under AeroSpace), and the bar's off button
+     and `space off` show it (macOS asks the first time)
 
 4. macOS: open Karabiner-Elements and follow its setup: turn on its driver in System Settings >
    General > Login Items & Extensions > Driver Extensions, allow Input Monitoring, choose the ANSI
@@ -42,22 +47,28 @@ and kept up to date on every machine, macOS and Linux.
    AeroSpace (keys at the top of `aerospace/aerospace.toml`), and option-fn switches the layout
    (fn alone does nothing).
 
-5. macOS: in Shortcuts, make the two shortcuts behind the moon in the bar, then run each once and
-   allow it to access Focus:
-   - "Toggle Do Not Disturb", one action: Set Focus, Toggle Do Not Disturb. A click on the moon
-     runs it.
-   - "Get Current Focus" (the name Shortcuts gives it), one action: Get Current Focus. The bar runs
-     it every 10 s to light the moon.
+5. macOS: let the coffee in the bar, and the `coffee` and `tisane` aliases, switch sleep without a
+   password (without this rule, a click on the coffee asks for it in a dialog):
+
+   ```sh
+   echo "$USER ALL=(root) NOPASSWD: /usr/bin/pmset -a disablesleep 0, /usr/bin/pmset -a disablesleep 1" |
+       sudo tee /etc/sudoers.d/pmset-disablesleep >/dev/null
+   sudo chmod 440 /etc/sudoers.d/pmset-disablesleep && sudo visudo -c
+   ```
 
 ## Commands
 
 `dotfiles install`, `dotfiles update` and `dotfiles status` are described in
 [AGENTS.md](AGENTS.md#commands-bindotfiles-on-path-via-zshzshrc).
 
+macOS: `space` restarts the window manager (AeroSpace, the bar and the borders), and the bar hides
+the menu bar again; `space off` stops it and shows the menu bar, as does the button left of the
+Apple menu in the bar.
+
 ## Project structure
 
 ```
-bin/        the dotfiles command
+bin/        the dotfiles and space commands
 platforms/  scheduling, notifications and the files to link, per OS
 zsh/        zshrc
 ghostty/    Ghostty config

@@ -33,6 +33,21 @@ ZSH_DEPS=(
     https://github.com/zsh-users/zsh-syntax-highlighting.git ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting
 )
 
+# Adds the Zen files to LINKS when Zen has a profile under ZEN_HOME (set by the platform): the one
+# this install runs, else the default of profiles.ini. The folder name is random, so it is not a
+# fixed line of LINKS.
+link_zen() {
+    [[ -n ${ZEN_HOME-} ]] || return 0
+    local profile
+    profile=$(sed -n 's/^Default=//p' $ZEN_HOME/installs.ini 2>/dev/null | head -1)
+    [[ -n $profile ]] || profile=$(awk -F= '/^Path=/ {path = $2} /^Default=1/ {print path; exit}' $ZEN_HOME/profiles.ini 2>/dev/null)
+    [[ -n $profile && -d $ZEN_HOME/$profile ]] || return 0
+    LINKS+=(
+        zen/user.js             $ZEN_HOME/$profile/user.js
+        theme/generated/zen.css $ZEN_HOME/$profile/chrome/userChrome.css
+    )
+}
+
 die() {
     print -u2 -r -- "dotfiles: $*"
     exit 1
@@ -200,6 +215,7 @@ repo_status() {
 case ${1-} in
 install|update|status)
     load_platform
+    link_zen
     $1
     ;;
 *) die "usage: dotfiles install|update|status" ;;

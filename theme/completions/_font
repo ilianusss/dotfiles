@@ -1,0 +1,4 @@
+#compdef font
+# zsh completion for the `font` command (~/.theme/bin/font)
+
+(( CURRENT == 2 )) && compadd -- ${THEME_HOME:-$HOME/.theme}/fonts/*(/N:t)

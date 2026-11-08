@@ -1,6 +1,8 @@
 # Linux: `dotfiles update` every 15 minutes as a systemd user timer, notifications from notify-send.
 # A distro that needs more gets platforms/linux-<ID from /etc/os-release>.zsh, which can source this.
 
+ZEN_HOME=~/.zen
+
 LINKS+=(
     superfile/config.toml          ~/.config/superfile/config.toml
     theme/generated/superfile.toml ~/.config/superfile/theme/theme.toml

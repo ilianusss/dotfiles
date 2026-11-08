@@ -1,0 +1,41 @@
+#!/usr/bin/env zsh
+# space: the macOS window manager, AeroSpace with SketchyBar and JankyBorders (see ../AGENTS.md).
+#
+#   space       restart them all: AeroSpace starts the bar and the borders, and the bar hides the menu
+#               bar again
+#   space off   stop them all and show the menu bar, for the plain macOS desktop (the bar's button
+#               left of the Apple menu)
+
+emulate -L zsh
+
+# -a: the bar's button runs this under SketchyBar, itself started by AeroSpace, and pgrep and pkill
+# skip their own ancestors without it
+stopped() { ! pgrep -aqx 'AeroSpace|sketchybar|borders' }
+
+# AeroSpace asked to quit puts the windows of the hidden workspaces back on screen; killed, it
+# would leave them in a corner
+stop() {
+    pgrep -aqx AeroSpace && osascript -e 'quit app "AeroSpace"'
+    pkill -ax borders
+    pkill -ax sketchybar
+    repeat 50 { stopped && return; sleep 0.1 }
+    print -u2 "space: still running: $(pgrep -alx 'AeroSpace|sketchybar|borders' | tr '\n' ' ')"
+    return 1
+}
+
+# Through System Events, so the running menu bar follows at once, not only the saved setting. Needs
+# the Automation permission for System Events (README).
+show_menu_bar() {
+    osascript -e 'tell application "System Events"' \
+        -e 'set autohide menu bar of dock preferences to false' -e 'end tell' >/dev/null && return
+    print -u2 'space: menu bar unchanged: allow System Events in Privacy & Security > Automation'
+    return 1
+}
+
+[[ $OSTYPE == darwin* ]] || { print -u2 'space: macOS only'; exit 1 }
+
+case $1 in
+    '')  stop && open -a AeroSpace ;;
+    off) stop && show_menu_bar ;;
+    *)   print -u2 'usage: space [off]'; exit 2 ;;
+esac
