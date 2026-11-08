@@ -1,8 +1,8 @@
 #!/usr/bin/env zsh
 # SketchyBar: the AeroSpace workspaces and the front app on the left; on the right, from the edge:
-# the Apple menu, clock, date, battery, Wi-Fi, Bluetooth, coffee or tisane, volume, memory and CPU. Started by
-# AeroSpace (aerospace.toml). Colors and font family come from ~/.theme (the theme command), which
-# reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
+# the Apple menu, the off button, clock, date, battery, Wi-Fi, Bluetooth, coffee or tisane, volume,
+# memory and CPU. Started by AeroSpace (aerospace.toml). Colors and font family come from ~/.theme
+# (the theme command), which reloads the bar on every switch. Docs: https://felixkratz.github.io/SketchyBar
 
 emulate -L zsh
 
@@ -12,7 +12,11 @@ FONT=Menlo
 
 PLUGINS=$CONFIG_DIR/plugins
 
-# The bar takes the place of the macOS menu bar, set to hide automatically (see the README)
+# The bar takes the place of the macOS menu bar, set to hide automatically: on every start, since
+# `space off` shows it (bin/space). Through System Events, so the menu bar follows at once; the bar
+# runs under AeroSpace, which needs the Automation permission for it (README).
+osascript -e 'tell application "System Events" to set autohide menu bar of dock preferences to true' \
+    >/dev/null &!
 sketchybar --bar position=top height=32 color=$BAR shadow=off sticky=on padding_left=8 padding_right=8
 
 sketchybar --default \
@@ -51,6 +55,11 @@ sketchybar --add item apple right \
         popup.align=right popup.background.color=$BAR popup.background.corner_radius=5 \
         popup.background.border_color=$DIM popup.background.border_width=1 \
     --subscribe apple mouse.exited.global front_app_switched aerospace_focus_change aerospace_workspace_change
+
+# Stops AeroSpace, the bar and the borders and shows the menu bar, for the plain macOS desktop;
+# `space` starts them again
+sketchybar --add item space_off right \
+    --set space_off icon=$'󰋂' label.drawing=off click_script="${CONFIG_DIR:A:h}/bin/space off"
 
 sketchybar --add item clock right \
     --set clock icon=$'' update_freq=30 script='sketchybar --set $NAME label="$(date +%H:%M)"' \

@@ -20,6 +20,7 @@ changes, so a file or repo added here reaches every machine.
 
 ```
 bin/dotfiles          the command; LINKS, REPOS and ZSH_DEPS at its top
+bin/space             macOS: `space` restarts the window manager, `space off` stops it
 platforms/<os>.zsh    schedule() and notify() for one OS: darwin (launchd), linux (systemd timer),
                       and the LINKS only that OS needs
 zsh/zshrc             -> ~/.zshrc; machine-only lines go in the untracked ~/.zshrc.local
@@ -62,6 +63,13 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
 - The bar is 32 px high (`sketchybarrc`), and AeroSpace leaves it `gaps.outer.top = 42` (+ 10 px
   of gap): change both together. The built-in display gets 10: macOS keeps the notch height (also
   32) free there.
+- `bin/space` restarts AeroSpace, SketchyBar and JankyBorders: it stops all three, then opens
+  AeroSpace, which starts the other two. `space off` stops them and shows the macOS menu bar, for
+  the plain macOS desktop; the bar's button left of the Apple menu runs it. AeroSpace is asked to
+  quit, not killed: only then does it put the windows of the hidden workspaces back on screen. The
+  bar hides the menu bar again on every start (`sketchybarrc`), so a login or `space` after
+  `space off` doesn't show both. The menu bar setting goes through System Events, so the menu bar
+  follows at once: that needs the Automation permission (README).
 - Installing the apps and the macOS settings they need is manual: see the README.
 
 ## How `update` treats a repo
@@ -96,7 +104,7 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
 ## Verify
 
 ```sh
-zsh -n bin/dotfiles platforms/*.zsh tests/run tests/*.zsh   # syntax
+zsh -n bin/* platforms/*.zsh tests/run tests/*.zsh          # syntax
 tests/run                                                   # every test, in throwaway repos
 dotfiles status
 tail ~/.local/state/dotfiles/update.log
