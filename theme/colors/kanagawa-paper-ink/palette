@@ -4,8 +4,24 @@
 name="Kanagawa Paper Ink"
 variant=dark
 
-# Claude Code (skin plugin): start from its built-in skin, not from base16
-claude_skin=kanagawa
+# Claude Code (skin mod): colours and spinner/footer words, comma-separated
+claude_user="#7e9cd8"
+claude_fg="#dcd7ba"
+claude_muted="#727169"
+claude_surface="#2a2a37"
+claude_zebra="#232330"
+claude_ok="#98bb6c"
+claude_err="#e46876"
+claude_warn="#e6c384"
+claude_read="#7fb4ca"
+claude_write="#ffa066"
+claude_run="#e6c384"
+claude_search="#957fb8"
+claude_web="#7e9cd8"
+claude_mcp="#7aa89f"
+claude_other="#c8c093"
+claude_spinner="Cresting,Inking,Brushing,Swelling,Breaking,Ebbing"
+claude_done="Crested,Inked,Brushed,Broken"
 
 # Neovim uses the plugin's own colorscheme instead of generating one from base16
 nvim_colorscheme=kanagawa-paper-ink

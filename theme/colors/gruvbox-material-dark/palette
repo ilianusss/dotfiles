@@ -4,9 +4,24 @@
 name="Gruvbox Material Dark"
 variant=dark
 
-# Claude Code (skin plugin): start from its built-in skin, not from base16
-claude_skin=gruvbox
+# Claude Code (skin mod): colours and spinner/footer words, comma-separated
 claude_user="#d3869b"
+claude_fg="#ebdbb2"
+claude_muted="#928374"
+claude_surface="#32302f"
+claude_zebra="#2f2c2a"
+claude_ok="#b8bb26"
+claude_err="#fb4934"
+claude_warn="#fe8019"
+claude_read="#83a598"
+claude_write="#fe8019"
+claude_run="#b8bb26"
+claude_search="#d3869b"
+claude_web="#8ec07c"
+claude_mcp="#fabd2f"
+claude_other="#ebdbb2"
+claude_spinner="Brewing,Roasting,Simmering,Toasting,Percolating,Kindling"
+claude_done="Brewed,Roasted,Toasted,Served"
 
 # base16 — https://github.com/tinted-theming/home/blob/main/styling.md
 base00="#282828"

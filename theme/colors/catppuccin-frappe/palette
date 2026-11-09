@@ -7,8 +7,24 @@ variant=dark
 # Neovim: catppuccin/nvim (lua/plugins/ui/colorscheme.lua in ~/.config/nvim)
 nvim_colorscheme=catppuccin-frappe
 
-# Claude Code (skin plugin): start from its built-in skin, not from base16
-claude_skin=catppuccin
+# Claude Code (skin mod): colours and spinner/footer words, comma-separated
+claude_user="#cba6f7"
+claude_fg="#cdd6f4"
+claude_muted="#7f849c"
+claude_surface="#252536"
+claude_zebra="#232334"
+claude_ok="#a6e3a1"
+claude_err="#f38ba8"
+claude_warn="#f9e2af"
+claude_read="#89dceb"
+claude_write="#fab387"
+claude_run="#f9e2af"
+claude_search="#cba6f7"
+claude_web="#74c7ec"
+claude_mcp="#94e2d5"
+claude_other="#bac2de"
+claude_spinner="Purring,Napping,Pouncing,Kneading,Stretching,Nuzzling"
+claude_done="Pounced,Purred,Napped,Curled up"
 
 # base16 - https://github.com/tinted-theming/home/blob/main/styling.md
 base00="#303446"

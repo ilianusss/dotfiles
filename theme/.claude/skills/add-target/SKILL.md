@@ -25,7 +25,7 @@ Only write a target when the tool needs hex colors or a font, or draws outside t
 
 A program you control that runs for a long time (an editor config, a plugin) can read the palette
 directly and follow `generated/stamp` (rewritten by every `theme apply`): no target, no generated
-file. That is how Neovim (`~/.config/nvim/themes/`) and the Claude Code skin plugin
+file. That is how Neovim (`~/.config/nvim/themes/`) and the Claude Code skin mod
 (`SKIN_THEME_HOME`, see its `docs/theme-mode.md`) work. Then the palette format and the stamp are a
 contract with that repo: keep `key="value"` lines plain, and list any new keys it reads in the
 palette table of `AGENTS.md`.

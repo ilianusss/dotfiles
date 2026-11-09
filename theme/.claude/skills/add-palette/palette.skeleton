@@ -6,10 +6,12 @@ variant=dark
 # Optional: use this Neovim colorscheme instead of generating one with mini.base16
 # nvim_colorscheme=<colorscheme-name>
 
-# Optional, Claude Code skin (derived from base16 by default): start from a built-in skin,
-# and/or override single slots (user fg muted surface zebra ok err warn read write run search web mcp other)
-# claude_skin=<built-in skin: kanagawa, gruvbox, homebrew...>
+# Optional, Claude Code skin (derived from base16 by default): override single slots
+# (user fg muted surface zebra ok err warn read write run search web mcp other), and the
+# spinner/footer words, comma-separated
 # claude_user="#000000"
+# claude_spinner="Brewing,Pouring"
+# claude_done="Brewed"
 
 # base16 — https://github.com/tinted-theming/home/blob/main/styling.md
 base00="#000000"   # background
