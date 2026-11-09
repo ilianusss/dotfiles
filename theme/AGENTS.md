@@ -34,7 +34,7 @@ generated/                 files written by targets + `stamp`; NEVER edit (gitig
 ## Palette format: `colors/<name>/palette`
 
 Shell `key="value"` lines, read by three parsers: zsh (`source`), Neovim
-(`themes/lua/theme/palette.lua`) and the Claude Code skin plugin (`hooks/skins/theme-home.ts`).
+(`themes/lua/theme/palette.lua`) and the Claude Code skin mod (`~/.claude/mods/skin/src/skins/theme-home.ts`).
 So keep it plain: no spaces around `=`, one key per line, `# comments` on their own line or after a
 value, no shell expansion.
 
@@ -49,8 +49,8 @@ value, no shell expansion.
 | `color0`..`color15` | no | ANSI terminal colors; default = base16 mapping (0=00 1=08 2=0B 3=0A 4=0D 5=0E 6=0C 7=05 8=03 9-14=1-6 15=07) |
 | `nvim_colorscheme` | no | Neovim uses this colorscheme instead of generating one from base16 with mini.base16 |
 | `zen_color` | no | Zen Browser: the window background, `"#rrggbb"`; default `base0E` mixed 20% into `base00` |
-| `claude_skin` | no | Claude Code skin: start from this built-in skin of the plugin (`kanagawa`, `gruvbox`, `homebrew`...: its colors and spinner words) instead of deriving it from base16 |
 | `claude_<slot>` | no | Claude Code skin: one slot's color, `"#rrggbb"`. Slots: `user fg muted surface zebra ok err warn read write run search web mcp other`; derivation table in the add-palette skill |
+| `claude_spinner` `claude_done` | no | Claude Code skin: the spinner's and the turn footer's words, comma-separated; default miasma's |
 
 `bin/theme` fills the defaults (`load_palette`), so targets can rely on every key being set.
 
@@ -81,7 +81,7 @@ draws no icons. Only the family follows the theme there: each tool keeps its own
 | JankyBorders (macOS) | `generated/borders`, sourced by `~/.dotfiles/borders/bordersrc`. Focused window `base0E` (the SketchyBar accent), the others `base02` | `targets/borders.zsh` reruns `borders` with the new colors, which updates the running one |
 | superfile | `generated/superfile.toml`, linked as `theme.toml` into its theme folder by `LINKS`; its `config.toml` (`~/.dotfiles/superfile`) selects it with `theme = 'theme'`. Panel borders and selection `base0E`/`base02`, text `base05`, font from the terminal | none: read at start, so a running superfile keeps its colors until restarted |
 | Zen Browser | `generated/zen.css`, linked as `chrome/userChrome.css` into the profile `installs.ini` names (`link_zen` in `bin/dotfiles`; `zen/user.js` turns on userChrome). Window background `zen_color`, accent `base0E` | none: Zen reads `userChrome.css` at start only, so restart Zen |
-| Claude Code ([skin plugin](https://github.com/ilianusss/claude-skin), `.theme` mode: `"env": {"SKIN_THEME_HOME": "~/.theme"}` in `settings.json` of `~/.claude` and `~/.claude-team`) | every `colors/*/palette` (one skin each) and `current/colors`; no target | polls `generated/stamp` (2 s). The other way too: `/skin <palette>` runs `bin/theme colors <palette>` |
+| Claude Code (skin mod `~/.claude/mods/skin`, loaded with `"env": {"SKIN_THEME_HOME": "~/.theme"}` in `settings.json` of `~/.claude` and `~/.claude-team`) | every `colors/*/palette` (one skin each) and `current/colors`; no target | polls `generated/stamp` (2 s). The other way too: `/skin <palette>` runs `bin/theme colors <palette>` |
 
 ## Adding a target (a new tool)
 
@@ -105,7 +105,7 @@ draws no icons. Only the family follows the theme there: each tool keeps its own
 4. `theme apply`, check the tool, add a row to the table above.
 
 A long-running program that can watch files may instead read `current/` (or `colors/`) itself and
-watch `generated/stamp` (rewritten on every apply), like Neovim and the Claude Code skin plugin.
+watch `generated/stamp` (rewritten on every apply), like Neovim and the Claude Code skin mod.
 `generated/stamp` and the palette format are a public contract: other repos depend on them.
 
 ## Skills (`.claude/skills/`, each with a skeleton to copy)
@@ -134,5 +134,5 @@ theme preview colors <name>                    # swatches of one palette
 nvim --headless "+lua print(vim.g.colors_name)" +qa   # "theme" or the palette's nvim_colorscheme
 ```
 
-In Claude Code (skin plugin in `.theme` mode): `/skin list` shows every palette and "skins from
+In Claude Code (skin mod): `/skin list` shows every palette and "skins from
 ~/.theme/colors"; `/skin gallery` shows the selected one.

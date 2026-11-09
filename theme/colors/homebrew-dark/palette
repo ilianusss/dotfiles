@@ -4,8 +4,24 @@
 name="Homebrew Dark"
 variant=dark
 
-# Claude Code (skin plugin): start from its built-in skin, not from base16
-claude_skin=homebrew
+# Claude Code (skin mod): colours and spinner/footer words, comma-separated
+claude_user="#fbb040"
+claude_fg="#f1dbb2"
+claude_muted="#a8957a"
+claude_surface="#3a322b"
+claude_zebra="#2f2924"
+claude_ok="#93c07e"
+claude_err="#ec7f72"
+claude_warn="#e8925a"
+claude_read="#86bcd0"
+claude_write="#ecc46c"
+claude_run="#74c0b2"
+claude_search="#b8bf6e"
+claude_web="#98a8dc"
+claude_mcp="#cc9cc4"
+claude_other="#bfae92"
+claude_spinner="Brewing,Mashing,Steeping,Sparging,Boiling,Hopping,Fermenting,Conditioning,Cellaring,Tapping,Pouring,Bottling"
+claude_done="Brewed,Poured,Bottled,Tapped,Cellared,Served"
 
 # Neovim: its own colorscheme (~/.config/nvim/themes/colors/homebrew.lua, follows variant)
 nvim_colorscheme=homebrew

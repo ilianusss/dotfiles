@@ -1,6 +1,6 @@
 ---
 name: add-palette
-description: How to add (or change, or remove) a color palette / theme in ~/.theme, tool by tool — base16 slots (importing a scheme or writing one with the skeleton), the terminal's ANSI colors (Ghostty), the Neovim colorscheme, the Claude Code skin (derived, claude_skin, claude_<slot>), light variants, and how to check each. Use when asked to add, port, create, tweak or delete a color scheme / theme / palette, or to fix how one looks in a given tool.
+description: How to add (or change, or remove) a color palette / theme in ~/.theme, tool by tool: base16 slots (importing a scheme or writing one with the skeleton), the terminal's ANSI colors (Ghostty), the Neovim colorscheme, the Claude Code skin (derived, claude_<slot>, claude_spinner, claude_done), light variants, and how to check each. Use when asked to add, port, create, tweak or delete a color scheme / theme / palette, or to fix how one looks in a given tool.
 ---
 
 # Adding a palette
@@ -15,7 +15,7 @@ What each tool takes from it — the steps below follow this order:
 | everything | `name`, `variant`, `base00`..`base0F` (required) | 1–2 |
 | Ghostty, zsh prompt, ANSI tools (fzf, bat, delta, lazygit...) | `color0..15`, `background`, `foreground`, `cursor*`, `selection_*` (default: from base16) | 3 |
 | Neovim | `nvim_colorscheme`, else mini.base16 from base16 | 4 |
-| Claude Code (skin plugin, `.theme` mode) | `claude_skin`, `claude_<slot>`, else derived from base16 | 5 |
+| Claude Code (skin mod) | `claude_<slot>`, else derived from base16; `claude_spinner`, `claude_done` | 5 |
 | SketchyBar, JankyBorders (macOS) | base16 only (`base00 02 04 05 08 0D`, roles in `AGENTS.md`): nothing to add | 6 |
 
 ## 1. Import it if a base16 scheme exists (fastest)
@@ -78,7 +78,8 @@ repo's `add-plugin` skill), else Neovim warns and falls back.
 
 ## 5. Claude Code skin (optional)
 
-The skin plugin turns every palette into a skin by itself (no target). By default from base16:
+The skin mod (`~/.claude/mods/skin`) turns every palette into a skin by itself (no target). By
+default from base16:
 
 | Slot | base16 | Paints |
 |---|---|---|
@@ -89,11 +90,13 @@ The skin plugin turns every palette into a skin by itself (no target). By defaul
 | `read` / `write` / `run` | 0D / 09 / 0B | Read / Edit, Write / Bash |
 | `search` / `web` / `mcp` / `other` | 0E / 0C / 0A / 04 | Grep, Glob / WebFetch / MCP tools / the rest |
 
-When the theme has a hand-made skin in the plugin (`noir tokyo-night dracula nord gruvbox catppuccin
-rose-pine everforest one-dark solarized github kanagawa ayu night-owl homebrew mono`), prefer it:
-`claude_skin=<name>` takes its colors **and** its spinner/footer words. Then fix single slots with
-`claude_<slot>="#rrggbb"` (works on top of either). Typical fixes: `claude_user` to the theme's real
+Fix single slots with `claude_<slot>="#rrggbb"`, or set all fifteen for a hand-made look (as
+`catppuccin-frappe`, `homebrew-dark` and others do). Typical fixes: `claude_user` to the theme's real
 accent (the derived one is blue), `claude_muted` when base04 is too dim on base00.
+
+The spinner and turn footer words are `claude_spinner="Brewing,Pouring"` and `claude_done="Brewed"`,
+comma-separated (a word may hold a space). Without them the palette takes miasma's ("Thinking",
+"Done"...).
 
 The palette is drawn as-is whatever Claude Code's light/dark setting, so a light palette needs no
 extra keys.
@@ -116,7 +119,8 @@ Only `homebrew-dark` is kept. Its light twin needs no download: every value is i
 `~/.config/nvim/themes/colors/homebrew.lua`, under `palettes.light` and `ansi.light`.
 
 1. `cp -r colors/homebrew-dark colors/homebrew-light`, then in the copy: header + `name="Homebrew Light"`,
-   `variant=light`, keep `nvim_colorscheme=homebrew`.
+   `variant=light`, keep `nvim_colorscheme=homebrew`. Drop the `claude_<slot>` lines (they are the
+   dark skin's colours) or redo them for the light background; keep `claude_spinner` and `claude_done`.
 2. base16 from `palettes.light`, same roles as the dark file: base00 `bg`, base01 `bg1`,
    base02 `sel`, base03 `comment`, base04 `muted`, base05 `fg`, base06/07 `fg_hi`, base08 `red`,
    base09 `copper`, base0A `honey`, base0B `hop`, base0C `teal`, base0D `ice`, base0E `amber`,
