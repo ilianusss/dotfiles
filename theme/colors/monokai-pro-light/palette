@@ -1,0 +1,48 @@
+# Monokai Pro Light - https://monokai.pro
+# base16: mapped by hand from the colors of Ghostty's built-in "Monokai Pro Light" (hue slots by
+# color: pink 08, orange 09, yellow 0A, green 0B, cyan 0C/0D, purple 0E); base01 is base00 darkened
+# a little, it is not in that port. ANSI + terminal: that theme.
+name="Monokai Pro Light"
+variant=light
+
+# base16 - https://github.com/tinted-theming/home/blob/main/styling.md
+base00="#faf4f2"
+base01="#ede7e5"
+base02="#bfb9ba"
+base03="#a59fa0"
+base04="#706b6e"
+base05="#29242a"
+base06="#29242a"
+base07="#29242a"
+base08="#e14775"
+base09="#e16032"
+base0A="#cc7a0a"
+base0B="#269d69"
+base0C="#1c8ca8"
+base0D="#1c8ca8"
+base0E="#7058be"
+base0F="#706b6e"
+
+# terminal
+background="#faf4f2"
+foreground="#29242a"
+cursor="#706b6e"
+cursor_text="#a39ea1"
+selection_bg="#bfb9ba"
+selection_fg="#29242a"
+color0="#faf4f2"
+color1="#e14775"
+color2="#269d69"
+color3="#cc7a0a"
+color4="#e16032"
+color5="#7058be"
+color6="#1c8ca8"
+color7="#29242a"
+color8="#a59fa0"
+color9="#e14775"
+color10="#269d69"
+color11="#cc7a0a"
+color12="#e16032"
+color13="#7058be"
+color14="#1c8ca8"
+color15="#29242a"

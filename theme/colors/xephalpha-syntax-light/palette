@@ -1,0 +1,49 @@
+# Syntax Light - https://github.com/XephAlpha/Syntax-Theme (VS Code theme XephAlpha.syntax, v1.5.3)
+# base16: mapped by hand from themes/Syntax Light-color-theme.json (hue slots by color: red 08,
+# orange 09, yellow 0A, green 0B, cyan 0C, blue 0D, magenta 0E); base01 is the theme's ansiWhite,
+# base02 its selection (#c0c0c0 at 50%) blended over the background, base0F is not in the theme.
+# ANSI + terminal: its terminal.* colors.
+name="XephAlpha Syntax Light"
+variant=light
+
+# base16 - https://github.com/tinted-theming/home/blob/main/styling.md
+base00="#e8e8e8"
+base01="#f0f0f0"
+base02="#d4d4d4"
+base03="#c0c0c0"
+base04="#808080"
+base05="#404040"
+base06="#404040"
+base07="#080808"
+base08="#a31515"
+base09="#e67e00"
+base0A="#bf8b00"
+base0B="#008000"
+base0C="#60bfbf"
+base0D="#0451a5"
+base0E="#f280d0"
+base0F="#808080"
+
+# terminal
+background="#e8e8e8"
+foreground="#404040"
+cursor="#404040"
+cursor_text="#e8e8e8"
+selection_bg="#d4d4d4"
+selection_fg="#404040"
+color0="#808080"
+color1="#a31515"
+color2="#008000"
+color3="#bf8b00"
+color4="#0451a5"
+color5="#f280d0"
+color6="#60bfbf"
+color7="#f0f0f0"
+color8="#808080"
+color9="#a31515"
+color10="#008000"
+color11="#bf8b00"
+color12="#0451a5"
+color13="#f280d0"
+color14="#60bfbf"
+color15="#f0f0f0"
