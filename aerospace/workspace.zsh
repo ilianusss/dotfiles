@@ -13,7 +13,7 @@ emulate -L zsh
 zmodload zsh/zselect zsh/system zsh/datetime
 
 # Seconds a display can stay away and still get its windows back when it returns
-GRACE=${GRACE:-900}
+GRACE=${GRACE:-21600}
 STATE=${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles
 # One line per window moved by reconcile: <epoch seconds> <window-id> <from> <to>
 PARKED=$STATE/parked

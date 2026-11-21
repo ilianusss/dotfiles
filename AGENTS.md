@@ -82,7 +82,7 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
   later, one run at a time: it moves each parked workspace with windows to the next empty
   workspace, the main display's first, then the other displays'; none left, they all go to
   workspace 9 of the main display. Each window moved is recorded in `~/.local/state/dotfiles/parked`
-  (`<epoch> <window-id> <from> <to>`). The display back within `GRACE` (15 minutes, at the top of
+  (`<epoch> <window-id> <from> <to>`). The display back within `GRACE` (6 hours, at the top of
   the script): each recorded window still in `<to>` goes back to `<from>`; one moved or closed
   since is left alone. Its workspace comes back, not its place in the tiling.
 - On every workspace change, and after a window is sent to another workspace, AeroSpace triggers
