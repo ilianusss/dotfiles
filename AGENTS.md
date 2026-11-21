@@ -37,7 +37,8 @@ aerospace/            aerospace.toml, new-app.zsh and workspace.zsh -> ~/.config
 sketchybar/           -> ~/.config/sketchybar (macOS): the bar, sketchybarrc + plugins/
 borders/bordersrc     -> ~/.config/borders/bordersrc (macOS): the focused window's border
 karabiner/            -> ~/.config/karabiner (macOS): right command as the AeroSpace key
-tests/                tests/run and the test_* functions of tests/*.zsh
+tests/                tests/run and the test_* functions of tests/*.zsh; tests/fake/aerospace, a
+                      fake AeroSpace for the window manager scripts
 ```
 
 Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config/nvim` and
@@ -67,6 +68,15 @@ Repos kept up to date, each with its own history: `ilianusss/nvim` in `~/.config
 - The number keys run `aerospace/workspace.zsh`, which picks the set of the focused display. To
   move a window to another display: ctrl-alt-shift-tab sends it to the next display, then
   ctrl-alt-shift-<n> picks its workspace there.
+- A new app opens on the display it was launched from, in the first empty workspace
+  (`aerospace/new-app.zsh`, run for each new window). AeroSpace puts a new window in the focused
+  workspace, so going to another display while the app starts would land it there. Every workspace
+  change is recorded in `~/.local/state/dotfiles/focus` (`workspace.zsh record`, the last 50 to 100
+  changes); the launch display is the one focused at the app's start time (`ps`). Moved to another
+  display, the window is not followed. Known limits: `ps` gives the second, so a change in the
+  launch second counts as before it; an app that relaunches itself counts from the relaunch. The
+  window shows in place for a moment before it moves: AeroSpace has no hook before a window exists,
+  and its own `on-window-detected` rules can't test whether a workspace is empty.
 - A display unplugged: AeroSpace parks its set on the main display, where the bar labels it
   `<set>-<n>`. The bar runs `workspace.zsh reconcile` on every display change and wake, a second
   later, one run at a time: it moves each parked workspace with windows to the next empty
@@ -135,7 +145,7 @@ systemctl --user list-timers dotfiles-update.timer          # Linux: the timer
 macOS window manager:
 
 ```sh
-zsh -n sketchybar/sketchybarrc sketchybar/plugins/*.zsh borders/bordersrc
+zsh -n aerospace/*.zsh tests/fake/aerospace sketchybar/sketchybarrc sketchybar/plugins/*.zsh borders/bordersrc
 aerospace reload-config && aerospace list-workspaces --all  # AeroSpace accepts its config
 sketchybar --reload && sketchybar --query bar               # the bar runs with the theme colors
 python3 -m json.tool karabiner/karabiner.json >/dev/null    # valid JSON

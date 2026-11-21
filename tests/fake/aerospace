@@ -1,0 +1,110 @@
+#!/usr/bin/env zsh
+# A fake AeroSpace for the window manager tests: AeroSpace is an app, it can't run in a test. Its
+# state is four files in $HOME/wm, written by the wm_* helpers of tests/run:
+#
+#   monitors     <monitor-id>|<is-main>|<name>
+#   workspaces   <workspace> <monitor-id>
+#   windows      <window-id> <app-bundle-id> <workspace> <layout> <app-pid>
+#   focused      the focused workspace
+#
+# It answers the list-* commands with the options the scripts use, and applies each
+# move-node-to-workspace, appending it to $HOME/calls.
+
+emulate -L zsh
+
+WM=$HOME/wm
+typeset -A monitor_of opt
+typeset -a positional
+
+monitor_of=($(<$WM/workspaces))
+focused=$(<$WM/focused)
+
+cmd=$1
+shift
+while (( $# )); do
+    case $1 in
+        --empty)
+            if [[ $2 == no ]]; then opt[empty]=no; shift; else opt[empty]=yes; fi ;;
+        --all|--count|--focused|--focus-follows-window)
+            opt[${1#--}]=yes ;;
+        --*)
+            opt[${1#--}]=$2; shift ;;
+        *)
+            positional+=$1 ;;
+    esac
+    shift
+done
+
+monitor_matches() {
+    case ${opt[monitor]:-all} in
+        all)     return 0 ;;
+        focused) [[ $1 == ${monitor_of[$focused]} ]] ;;
+        *)       [[ $1 == ${opt[monitor]} ]] ;;
+    esac
+}
+
+windows() { [[ -s $WM/windows ]] && print -r -- "$(<$WM/windows)" }
+
+# Prints the format with each %{name} replaced by the value of field[name]
+render() {
+    local out=$1 key pattern
+    for key in ${(k)field}; do
+        pattern="%{$key}"
+        out=${out//$pattern/${field[$key]}}
+    done
+    print -r -- $out
+}
+
+typeset -A field
+typeset -a lines
+
+case $cmd in
+    list-monitors)
+        local id main name
+        while IFS='|' read -r id main name; do
+            [[ -n ${opt[focused]} && $id != ${monitor_of[$focused]} ]] && continue
+            field=(monitor-id $id monitor-is-main $main monitor-name $name)
+            lines+=("$(render ${opt[format]:-'%{monitor-id} | %{monitor-name}'})")
+        done <$WM/monitors
+        ;;
+    list-workspaces)
+        local ws used=" $(windows | awk '{ print $3 }' | tr '\n' ' ') "
+        for ws in ${(f)"$(<$WM/workspaces)"}; do
+            ws=${ws%% *}
+            monitor_matches ${monitor_of[$ws]} || continue
+            [[ -n ${opt[focused]} && $ws != $focused ]] && continue
+            [[ ${opt[empty]} == yes && $used == *" $ws "* ]] && continue
+            [[ ${opt[empty]} == no && $used != *" $ws "* ]] && continue
+            field=(workspace $ws monitor-id ${monitor_of[$ws]})
+            lines+=("$(render ${opt[format]:-'%{workspace}'})")
+        done
+        ;;
+    list-windows)
+        local id app ws layout pid
+        windows | while read -r id app ws layout pid; do
+            monitor_matches ${monitor_of[$ws]} || continue
+            [[ -n ${opt[workspace]} && $ws != ${opt[workspace]} ]] && continue
+            [[ -n ${opt[app-bundle-id]} && $app != ${opt[app-bundle-id]} ]] && continue
+            field=(window-id $id app-bundle-id $app workspace $ws window-layout $layout
+                   app-pid $pid monitor-id ${monitor_of[$ws]})
+            lines+=("$(render ${opt[format]:-'%{window-id} | %{app-bundle-id}'})")
+        done
+        ;;
+    move-node-to-workspace)
+        local target=${positional[1]}
+        print -r -- "aerospace move-node-to-workspace ${opt[window-id]} $target${opt[focus-follows-window]:+ follow}" >>$HOME/calls
+        windows | awk -v id=${opt[window-id]} -v ws=$target '$1 == id { $3 = ws } { print }' >$WM/windows.new
+        mv $WM/windows.new $WM/windows
+        [[ -n ${opt[focus-follows-window]} ]] && print -r -- $target >$WM/focused
+        ;;
+    *)
+        print -u2 -r -- "fake aerospace: $cmd not faked"
+        exit 1
+        ;;
+esac
+
+if [[ -n ${opt[count]} ]]; then
+    print -r -- $#lines
+elif (( $#lines )); then
+    print -rl -- $lines
+fi

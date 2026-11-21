@@ -6,6 +6,7 @@
 
 emulate -L zsh
 setopt extended_glob pipe_fail
+zmodload zsh/datetime
 
 REPO=${0:A:h:h}
 
@@ -104,6 +105,37 @@ head_of() { git -C $1 rev-parse HEAD }
 upstream_of() { git --git-dir=$T/remotes/$1.git rev-parse main }
 
 calls() { [[ -f $HOME/calls ]] && print -r -- "$(<$HOME/calls)" }
+
+# A fake AeroSpace (tests/fake/aerospace) with the given displays, each "<monitor-id>|<is-main>|<name>",
+# and the workspaces <n>-1 to <n>-9 on monitor n. No window; 1-1 focused. sketchybar does nothing.
+wm() {
+    mkdir -p $HOME/wm
+    ln -s $REPO/tests/fake/aerospace $T/bin/aerospace
+    stub $T/bin/sketchybar ':'
+    stub $T/bin/ps 'print -r -- "$(<$HOME/wm/started.${@[-1]})"'
+    print -rl -- "$@" >$HOME/wm/monitors
+    : >$HOME/wm/workspaces
+    local monitor
+    for monitor in ${@%%\|*}; do
+        wm_park $monitor $monitor
+    done
+    print -r -- 1-1 >$HOME/wm/focused
+}
+
+# The workspaces of set <n> on monitor <id>: AeroSpace parks the set of a missing display
+wm_park() { print -rl -- $1-{1..9}" $2" >>$HOME/wm/workspaces }
+
+# A window: <id> <app-bundle-id> <workspace> [layout] [app-pid]
+wm_window() { print -r -- "$1 $2 $3 ${4:-tiling} ${5:-1}" >>$HOME/wm/windows }
+
+wm_focus() { print -r -- $1 >$HOME/wm/focused }
+
+# The start time ps prints for <pid>, as `ps -o lstart=` does: <epoch seconds>
+wm_started() { LC_ALL=C strftime '%a %b %e %H:%M:%S %Y    ' $2 >$HOME/wm/started.$1 }
+
+wm_where() { awk -v id=$1 '$1 == id { print $3 }' $HOME/wm/windows }
+
+wm_focused() { print -r -- "$(<$HOME/wm/focused)" }
 
 fail() {
     print -u2 -r -- "    $*"
