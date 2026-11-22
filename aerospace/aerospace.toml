@@ -31,10 +31,12 @@ auto-reload-config = true
 # exec-and-forget: started once, even when AeroSpace restarts. borders runs ~/.config/borders/bordersrc.
 after-startup-command = ['exec-and-forget sketchybar', 'exec-and-forget borders']
 
-# Tells the bar which workspace is focused (sketchybar/plugins/spaces.zsh)
-exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
-]
+# Tells the bar which workspace is focused (sketchybar/plugins/spaces.zsh), then records it:
+# new-app.zsh finds there the display an app was launched from
+exec-on-workspace-change = ['/bin/bash', '-c', '''
+    sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE
+    ~/.config/aerospace/workspace.zsh record $AEROSPACE_FOCUSED_WORKSPACE
+''']
 
 # Closes the bar's Apple menu when another window is focused (sketchybar/sketchybarrc)
 on-focus-changed = ['exec-and-forget sketchybar --trigger aerospace_focus_change']
@@ -89,8 +91,9 @@ gaps.outer.right =      10
     if.app-id = 'com.apple.finder'
     run = 'layout floating'
 
-# An app that starts opens in the first empty workspace (new-app.zsh). Last, so the windows above
-# stay where they open: Ghostty from ctrl-alt-enter, the floating ones.
+# An app that starts opens in the first empty workspace of the display it was launched from
+# (new-app.zsh). Last, so the windows above stay where they open: Ghostty from ctrl-alt-enter, the
+# floating ones.
 [[on-window-detected]]
     if.during-aerospace-startup = false
     run = 'exec-and-forget ~/.config/aerospace/new-app.zsh'

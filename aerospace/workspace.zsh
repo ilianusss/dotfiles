@@ -7,15 +7,19 @@
 #   workspace.zsh sets        print "<monitor-id> <set>" per display (the bar's labels)
 #   workspace.zsh reconcile   move the windows of a display that is gone to the displays left, and
 #                             back if it returns within GRACE
+#   workspace.zsh record <ws> add the focused workspace to FOCUS, on every workspace change
 
 emulate -L zsh
 zmodload zsh/zselect zsh/system zsh/datetime
 
 # Seconds a display can stay away and still get its windows back when it returns
-GRACE=${GRACE:-900}
+GRACE=${GRACE:-21600}
 STATE=${XDG_STATE_HOME:-$HOME/.local/state}/dotfiles
 # One line per window moved by reconcile: <epoch seconds> <window-id> <from> <to>
 PARKED=$STATE/parked
+# One line per workspace change, the last 50 to 100: <epoch seconds> <focused workspace>. new-app.zsh
+# reads it to find the display an app was launched from.
+FOCUS=$STATE/focus
 
 typeset -A set_of
 
@@ -95,6 +99,13 @@ reconcile() {
     sketchybar --trigger aerospace_workspace_change
 }
 
+record() {
+    mkdir -p $STATE
+    print -r -- "$EPOCHSECONDS $1" >>$FOCUS
+    local -a lines=("${(@f)$(<$FOCUS)}")
+    if (( $#lines > 100 )); then print -rl -- ${lines[-50,-1]} >$FOCUS; fi
+}
+
 case $1 in
     focus)     aerospace workspace $(focused_set)-$2 ;;
     # The focused workspace doesn't change, so exec-on-workspace-change doesn't run: tell the bar
@@ -102,4 +113,5 @@ case $1 in
                    sketchybar --trigger aerospace_workspace_change ;;
     sets)      read_sets; for id s in ${(kv)set_of}; do print -r -- $id $s; done ;;
     reconcile) reconcile ;;
+    record)    record $2 ;;
 esac
